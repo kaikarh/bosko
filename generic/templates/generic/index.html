@@ -14,6 +14,7 @@
 <div class="text-center my-5 py-5 px-3">
   <h1>What's up yo</h1>
   <p class="lead">Current Date is: {{ now|date:"N d Y" }}</p>
+  <p>Time of request is: {{ now|date:"h : i : s A" }}</p>
   {% if request.META.HTTP_X_FORWARDED_FOR %}
     <p>It is thee: {{ request.META.HTTP_X_FORWARDED_FOR }}</p>
   {% else %}
