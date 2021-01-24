@@ -6,6 +6,7 @@ Set env variables
 - `DJANGO_SECRET_KEY` 
 - `DJANGO_DEBUG`
 - `DJANGO_ALLOWED_HOSTS`
+- `DJANGO_STATIC_URL`
 
 Also set these if using postgres database
 - `POSTGRES_PASSWORD`
