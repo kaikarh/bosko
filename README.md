@@ -1,0 +1,2 @@
+# bosko
+Django server
