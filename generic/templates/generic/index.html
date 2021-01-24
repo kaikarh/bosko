@@ -15,10 +15,6 @@
   <h1>What's up yo</h1>
   <p class="lead">Current Date is {{ now|date:"N d Y" }}</p>
   <p>Time of request is {{ now|date:"h : i : s A" }}</p>
-  {% if request.META.get('HTTP_X_FORWARDED_FOR') %}
-    <p>It is thee: {{ request.META.get('HTTP_X_FORWARDED_FOR').split(',')[-1] }}</p>
-  {% else %}
-    <p>It is thee: {{ request.META.get('REMOTE_ADDR') }}</p>
-  {% endif %}
+  <p>It is thee: {{ remote_ip }}</p>
 </div>
 {% endblock %}
