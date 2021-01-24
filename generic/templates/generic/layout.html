@@ -1,4 +1,3 @@
-{% load static %}
 <!doctype html>
 <html lang="en">
   <head>
@@ -6,15 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="Jya">
-    <title>Bosko Generic</title>
-
     <!-- Bootstrap core CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Favicons 
-    <link rel="icon" href="" sizes="32x32" type="image/png">
-    -->
-    <link rel="icon" href="{% static "generic/favicon.ico" %}" sizes="16x16" type="image/png">
+    {% block header %}
+    {% endblock %}
 
   </head>
 
