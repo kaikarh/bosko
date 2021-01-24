@@ -20,5 +20,8 @@
   {% else %}
     <p>It is thee: {{ request.META.REMOTE_ADDR }}</p>
   {% endif %}
+  {% if request.META.HTTP_X_REAL_IP %}
+    <p>Or maybe thee: {{ request.META.HTTP_X_REAL_IP }}
+  {% endif %}
 </div>
 {% endblock %}
