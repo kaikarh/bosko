@@ -18,6 +18,8 @@ FROM python:3-alpine
 
 WORKDIR /usr/src/app
 
+# Install dependencies
+RUN apk update && apk add libpq
 COPY --from=builder /wheels /wheels
 RUN pip install -U pip \
     && pip install --no-cache -r /wheels/requirements.txt -f /wheels \
