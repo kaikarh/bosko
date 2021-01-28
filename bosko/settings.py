@@ -145,4 +145,4 @@ DATABASES['default'].update(db_from_env)
 
 # cors settings
 CORS_ALLOW_ALL_ORIGINS = True
-CORS_URLS_REGEX = r'^/api/.*$'
+CORS_URLS_REGEX = r'^/dsca/api/.*$'
