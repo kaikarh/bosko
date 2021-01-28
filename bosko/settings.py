@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 import os
+import dj_database_url
 
 from pathlib import Path
 
@@ -44,6 +45,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -82,17 +84,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
-# Use postgres if environment variables are set
-if os.environ.get('POSTGRES_PASSWORD'):
-    DATABASES['default'].update({
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('POSTGRES_DB'),
-        'USER': os.environ.get('POSTGRES_USER'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
-        'HOST': os.environ.get('DB_URL'),
-        'PORT': os.environ.get('DB_PORT'),
-    })
 
 
 # Password validation
@@ -134,3 +125,15 @@ USE_TZ = True
 STATIC_URL = os.environ.get('DJANGO_STATIC_URL', '/static/')
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Simplified static file serving.
+# https://warehouse.python.org/project/whitenoise/
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Update database configuration from $DATABASE_URL
+# In the format of:
+# Database://user:password@host/databaseName
+# Example: DATABASE_URL=postgres://uzfnbcyxidzgrl:j2jkUFDF6OGGqxkgg7Hk3ilbZI@ec2-54-243-201-144.compute-1.amazonaws.com:5432/dbftm4qgh3kda3
+
+db_from_env = dj_database_url.config(conn_max_age=500)
+
