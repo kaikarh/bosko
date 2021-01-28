@@ -146,3 +146,11 @@ DATABASES['default'].update(db_from_env)
 # cors settings
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_URLS_REGEX = r'^/dsca/api/.*$'
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '50/day',
+        'user': '1000/day'
+    }
+}
