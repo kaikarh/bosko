@@ -138,4 +138,4 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Example: DATABASE_URL=postgres://uzfnbcyxidzgrl:j2jkUFDF6OGGqxkgg7Hk3ilbZI@ec2-54-243-201-144.compute-1.amazonaws.com:5432/dbftm4qgh3kda3
 
 db_from_env = dj_database_url.config(conn_max_age=500)
-
+DATABASES['default'].update(db_from_env)
