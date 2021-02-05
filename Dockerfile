@@ -29,7 +29,7 @@ COPY . .
 
 EXPOSE 8000
 
-RUN python3 manage.py collectstatic
+RUN python manage.py collectstatic --no-input
 
 COPY ./entrypoint.sh /
 
