@@ -35,7 +35,7 @@
           {% for track in album.tracks %}
           <div class="row track">
             <div class="col song-index">
-              <span>{{ loop.index }}</span>
+              <span>{{ forloop.counter }}</span>
             </div>
             <div class="col song-title">
               <div>{{ track }}</div>
