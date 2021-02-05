@@ -35,4 +35,4 @@ COPY ./entrypoint.sh /
 
 ENTRYPOINT ["/entrypoint.sh"]
 
-CMD ["gunicorn", "bosko.wsgi", "--bind", "0.0.0.0:8000"]
+CMD ["gunicorn", "bosko.wsgi", "--bind", "0.0.0.0:8000", "--access-logfile", "-"]
