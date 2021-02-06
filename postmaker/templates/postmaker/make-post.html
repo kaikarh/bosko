@@ -1,55 +1,60 @@
+{% extends "layout.html" %}
+
 {% load static %}
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" href="{% static 'postmaker/normalize.css' %}">
-    <link rel="stylesheet" href="{% static 'postmaker/style.css' %}">
-    <script type="text/javascript" src="{% static 'postmaker/script.js' %}" async></script>
-    <title>Make Post With Template</title>
-  </head>
 
-  <body>
-    <div class="container">
-      <div class="row">
-        <div class="col col-sm-5 col-md-4 form-wrapper">
-          <div class="apl-wrapper">
-            <div class="form-group">
-              {% for field in aplfrm %}
-              <div class="form-group">
-                {{ field.errors }}
-                {{ field.label_tag }}
-                <div>
-                  {{ field }}
-                </div>
-                <button class="btn btn-default" type="button" href="#" id="{{ field.id_for_label|add:'-btn' }}">Get!</button>
-              </div>
-              {% endfor %}
-            </div>
+{% block header %}
+<title>Make A Post With Template</title>
+<script type="text/javascript" src="{% static 'postmaker/script.js' %}" async></script>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-evenly">
+    <div class="col-sm-5 col-md-4 col-lg-3 form-wrapper">
+      <div class="mb-4">
+        <h1>Make A Post</h1>
+        <p class="lead">Fill in the table or enter an apple music url to let the robot fetch and parse information for you</p>
+      </div>
+      <div class="apl-wrapper">
+        <div class="form-group">
+          {% for field in aplfrm %}
+          <div class="field-error">
+            {{ field.errors }}
           </div>
-        </div>
-        <div class="col col-sm-7 col-md-6 form-wrapper">
-          <form action="" method="post">
-            {% csrf_token %}
-            <div class="form">
-
-              {% for field in form %}
-              <div class="form-group">
-                {{ field.errors }}
-                {{ field.label_tag }}
-                <div>
-                  {{ field }}
-                </div>
-              </div>
-              {% endfor %}
-
-            </div>
-
-            <button type="submit" class="btn btn-default">Submit!</button>
-          </form>
+          <div class="mb-2">
+            {{ field.label_tag }}
+          </div>
+          <div class="input-group mb-3">
+            {{ field }}
+            <button class="btn btn-outline-secondary" type="button" href="#" id="{{ field.id_for_label|add:'-btn' }}">Get!</button>
+          </div>
+          {% endfor %}
         </div>
       </div>
     </div>
-  </body>
-</html>
+    <div class="col-sm-7 col-md-8 col-lg-6 form-wrapper">
+      <form action="" method="post">
+        {% csrf_token %}
+        <div class="form">
+
+          {% for field in form %}
+          <div class="field-error">
+            {{ field.errors }}
+          </div>
+          <div class="input-group mb-3">
+            <label class="input-group-text" for="{{ field.id_for_label }}">
+              {{ field.label }}
+            </label>
+
+            {{ field }}
+          </div>
+          {% endfor %}
+
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit!</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

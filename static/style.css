@@ -1,0 +1,13 @@
+body {
+  height: 100vh;
+}
+
+.container.landing {
+  justify-content: center;
+}
+
+.form-wrapper {
+  padding-top: 4rem;
+  margin-right: 0;
+  margin-left: 0;
+}

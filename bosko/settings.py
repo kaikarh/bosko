@@ -61,10 +61,13 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'bosko.urls'
 
+# Added project-wide template DIR
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            BASE_DIR / "templates",
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -130,6 +133,10 @@ USE_TZ = True
 STATIC_URL = os.environ.get('DJANGO_STATIC_URL', '/static/')
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/

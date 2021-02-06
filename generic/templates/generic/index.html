@@ -1,20 +1,18 @@
-{% extends "generic/layout.html" %}
-{% load static %}
+{% extends "layout.html" %}
 
 {% block header %}
-<!-- Favicons 
-  <link rel="icon" href="" sizes="32x32" type="image/png">
--->
-<link rel="icon" href="{% static "generic/favicon.ico" %}" sizes="16x16" type="image/png">
 
-<title>Bosko Generic</title>
+<title>Bosko ⺨</title>
+
 {% endblock %}
 
 {% block content %}
-<div class="text-center my-5 py-5 px-3">
-  <h1>What's up yo</h1>
-  <p class="lead">Current Date is {{ now|date:"N d Y" }}</p>
-  <p>Time of request is {{ now|date:"h : i : s A" }}</p>
-  <p>It is thee: {{ remote_ip }}</p>
+<div class="container landing d-flex w-100 h-100 flex-column">
+  <main role="main" class="text-center">
+    <h1 class="display-1 pb-4">What's Up Yo</h1>
+    <p class="lead">{{ now|date:"N d Y" }}</p>
+    <p>{{ now|date:"h : i : s A" }}</p>
+    <p>It is thee: <span class="text-muted">{{ remote_ip }}</span></p>
+  </main>
 </div>
 {% endblock %}
