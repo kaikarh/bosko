@@ -2,6 +2,7 @@ import json
 import re
 
 from django.shortcuts import render
+from django.template import loader
 from django.http import HttpResponse, JsonResponse
 
 from .amParser import Am
@@ -49,7 +50,11 @@ def make(request):
                 tracks = exp.findall(data['tracks'])
                 data['tracks'] = tracks
 
-            return render(request, 'postmaker/rendered-post.html', context={'album': data})
+            #template = loader.get_template('postmaker/rendered-post.html')
+            #rendered = template.render({'album': data})
+            rendered_post = loader.render_to_string('postmaker/rendered-post.html', {'album': data})
+
+            return render(request, 'postmaker/result.html', context={'code': rendered_post})
         else:
             # send back the form with error message
             return render(request, 'postmaker/make-post.html', {'form': form, 'aplfrm': aplform})

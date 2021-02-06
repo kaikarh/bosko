@@ -3,8 +3,11 @@
 {% load static %}
 
 {% block header %}
-<title>Make A Post With Template</title>
 <script type="text/javascript" src="{% static 'postmaker/script.js' %}" async></script>
+{% endblock %}
+
+{% block title %}
+Make A Post With Template | {{ block.super }}
 {% endblock %}
 
 {% block content %}
@@ -13,7 +16,8 @@
     <div class="col-sm-5 col-md-4 col-lg-3 form-wrapper">
       <div class="mb-4">
         <h1>Make A Post</h1>
-        <p class="lead">Fill in the table or enter an apple music url to let the robot fetch and parse information for you</p>
+        <p class="lead text-secondary">Make an apple music style album info post</p>
+        <p class="text-secondary">Fill in the table or enter an apple music url to let the robot fetch and parse information for you</p>
       </div>
       <div class="apl-wrapper">
         <div class="form-group">
@@ -51,8 +55,9 @@
           {% endfor %}
 
         </div>
-
-        <button type="submit" class="btn btn-primary">Submit!</button>
+        <div class="form-submit d-flex justify-content-end pb-3">
+          <button type="submit" class="btn btn-primary float-right">Submit!</button>
+        </div>
       </form>
     </div>
   </div>

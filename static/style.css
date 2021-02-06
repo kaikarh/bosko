@@ -1,5 +1,6 @@
 body {
   height: 100vh;
+  margin-top: 30px;
 }
 
 .container.landing {
@@ -10,4 +11,17 @@ body {
   padding-top: 4rem;
   margin-right: 0;
   margin-left: 0;
+}
+
+.preview-wrapper {
+  padding-top: 60px;
+  padding-bottom: 35vh;
+  overflow: scroll;
+}
+
+.sticky-bottom {
+  bottom: 0;
+  position: absolute;
+  height: 25vh;
+  width: 100%;
 }

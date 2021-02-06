@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Done making! | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="h-100 preview-wrapper">
+    <div class="container">
+        {{ code }}
+    </div>
+
+    <div class="sticky-bottom bg-light">
+        <div class="container d-flex py-3 h-100 flex-column">
+            <h4>Source Code</h4>
+            <div class="source-wrapper h-100">
+                <textarea class="form-control h-100">{{ code }}</textarea>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
