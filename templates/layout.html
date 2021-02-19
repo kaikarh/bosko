@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="Jya">
-    <title>{% block title %}Bosko{% endblock %}</title>
+    <title>{% block title %}bosko{% endblock %}</title>
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'apple-touch-icon.png' %}">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon-32x32.png' %}">
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon-16x16.png' %}">
@@ -26,20 +26,25 @@
 
     <nav class="navbar navbar-expand-md navbar-light bg-light fixed-top">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#">Bosko</a>
+        <a class="navbar-brand" href="{% url 'generic:index' %}">bosko</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsDefault">
           <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navbarsDefault">
           <ul class="navbar-nav me-auto mb-2 mb-md-0">
-            <li class="nav-item active">
-              <a class="nav-link"  href="#">Home</a>
+            <li class="nav-item">
+              <a class="nav-link {% if request.resolver_match.app_name == 'dsca' %} active {% endif %}" href="{% url 'dsca:index' %}">dsca</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.resolver_match.app_name == 'postmaker' %} active {% endif %}" href="{% url 'postmaker:make' %}">postmaker</a>
             </li>
           </ul>
         </div>
       </div>
     </nav>
+
+    
 
     <div class="h-100 content">
 
@@ -49,6 +54,5 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
-
   </body>
 </html>

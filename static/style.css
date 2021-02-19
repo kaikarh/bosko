@@ -31,6 +31,7 @@ body {
 
 .chart-container {
   position: relative;
-  height: 200px;
+  height: 350px;
   width: 100%;
+  max-width: 900px;
 }

@@ -23,11 +23,14 @@ def index(request):
     total = len(Daybook.objects.all())
     data['total'] = total
 
-    daily_count = Daybook.objects.values('time__date').annotate(dcount=Count('time__date')).order_by('-dcount')
+    daily_count = Daybook.objects.values('time__date').annotate(dcount=Count('time__date')).order_by('-time__date')
     country_count = Daybook.objects.values('country').annotate(ccount=Count('country')).order_by('-ccount')
+    file_count = Daybook.objects.values('destination').annotate(fcount=Count('destination')).order_by('-fcount')
 
-    data['top_daily_count'] = daily_count[:5]
+    data['daily_count'] = daily_count[:30]
     data['country_count'] = country_count
+    data['file_count'] = file_count[:5]
+    
     return render(request, 'dsca/dash.html', {'stats': data})
 
 class ListAllView(generic.ListView):
