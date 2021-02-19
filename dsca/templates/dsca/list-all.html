@@ -1,0 +1,42 @@
+{% extends 'layout.html' %}
+{% load tz %}
+
+{% block title %}Daybook | {{ block.super }}{% endblock %}
+
+{% block content %}
+
+{% get_current_timezone as TIME_ZONE %}
+
+<div class="inner-content">
+  <div class="container mt-5">
+    <h1>Daybook</h1>
+    <h5>Displayed as  
+      <form action="" method="POST" class="d-inline">
+        {% csrf_token %}
+        <span>
+          <select class="form-select form-select-sm d-inline w-auto" name="timezone" onchange="this.form.submit()">
+            {% for tz in timezones %}
+            <option value="{{ tz }}"{% if tz == TIME_ZONE %} selected{% endif %}>
+              {{ tz }}
+            </option>
+            {% endfor %}
+          </select>
+        </span>
+      </form>
+      time
+    </h5>
+    <div class="list">
+      <ul>
+        {% for record in object_list %}
+        <li>
+          <div class="record">
+            {{ record.time }}
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
