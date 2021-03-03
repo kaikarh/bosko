@@ -1,5 +1,5 @@
 document.getElementById("id_apple_music_url-btn").onclick = () => {
-  api_url = "/postmaker/api/get";
+  api_url = "/postmaker/api/am";
   amurl = document.getElementById("id_apple_music_url").value;
   data = {
     'amurl': amurl

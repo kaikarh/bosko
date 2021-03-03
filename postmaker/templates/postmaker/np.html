@@ -1,0 +1,24 @@
+{% load static %}
+
+<html>
+    <head>
+        <title>test</title>
+        <script src="{% static 'postmaker/np.js' %}" async></script>
+    </head>
+    <body>
+        <div>
+            <form method="post">
+                {% csrf_token %}
+                <input type="text" id="np-username">
+                <input type="password" id="np-password">
+                <button type="button" id="np-login">Submit</button>
+                <select name="accounts" id="np-account-select">
+                    {% for key, value in accounts.items %}
+                        <option value="{{ value }}">{{ key }}</option>
+                    {% endfor %}
+                </select>
+                <div id="np-error"></div>
+            </form>
+        </div>
+    </body>
+</html>

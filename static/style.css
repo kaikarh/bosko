@@ -14,14 +14,14 @@ body {
 
 .preview-wrapper {
   padding-top: 60px;
-  padding-bottom: 35vh;
+  height: 65vh;
   overflow: scroll;
 }
 
 .sticky-bottom {
   bottom: 0;
   position: absolute;
-  height: 25vh;
+  max-height: 35vh;
   width: 100%;
 }
 
@@ -34,4 +34,8 @@ body {
   height: 350px;
   width: 100%;
   max-width: 900px;
+}
+
+#np-login-msg {
+  display: none;
 }
