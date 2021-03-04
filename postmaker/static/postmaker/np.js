@@ -90,7 +90,10 @@ document.getElementById("np-post-thread").onclick = () => {
         }
     })
     .then((content) => {
-        msg_box.innerText = content["url"] + "<br />" + content["title"];
+        var titleElm = document.createElement("a");
+        titleElm.href = content["url"];
+        titleElm.innerText = content["title"];
+        msg_box.appendChild(titleElm);
     })
     .catch((error) => {
         msg_box.innerText = error;
