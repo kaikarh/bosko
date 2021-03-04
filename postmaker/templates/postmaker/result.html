@@ -62,22 +62,33 @@ Done making! | {{ block.super }}
                         <span class="input-group-text">Type</span>
                         <select class="form-select" name="typeid">
                             <option value="0"></option>
-                            <option value="90">R&B/Soul</option>
-                            <option value="91">Hip-Hop/Rap</option>
-                            <option value="83">Pop</option>
-                            <option value="84">Rock</option>
-                            <option value="86">Alternative/Indie</option>
-                            <option value="87">Dance/House</option>
-                            <option value="88">Electronic</option>
-                            <option value="89">Other</option>
+                            <optgroup label="English Albums">
+                                <option value="90">R&B/Soul</option>
+                                <option value="91">Hip-Hop/Rap</option>
+                                <option value="83">Pop</option>
+                                <option value="84">Rock</option>
+                                <option value="86">Alternative/Indie</option>
+                                <option value="87">Dance/House</option>
+                                <option value="88">Electronic</option>
+                                <option value="89">Other</option>
+                            </optgroup>
+                            <optgroup label="Japan & Korea">
+                                <option value="1">单曲</option>
+                                <option value="66">Album</option>
+                                <option value="67">Single</option>
+                                <option value="68">Mini Album</option>
+                                <option value="69">Digital Single</option>
+                                <option value="70">Maxi</option>
+                                <option value="71">Discography</option>
+                            </optgroup>
                         </select>
                     </div>
 
                     <div class="input-group mb-2">
                         <span class="input-group-text">Forum</span>
                         <select class="form-select" name="forum_id">
-                            <option value="45">Western Albums</option>
-                            <option value="12">Western Singles</option>
+                            <option value="45">English Albums</option>
+                            <option value="12">English Singles</option>
                             <option value="56">Mandarian Albums</option>
                             <option value="59">Japanese and Korean</option>
                             <option value="18">Jazz Albums</option>

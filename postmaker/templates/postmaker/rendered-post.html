@@ -19,7 +19,7 @@
               <div class="description-data">
                 <p>
                   <span class="line-title">
-                    简介
+                    介紹
                   </span>
                   {{ album.description }}
                 </p>
@@ -68,30 +68,51 @@
     <div class="download-info">
       <div class="button-content">
         <button class="download-button" id="download-button" type="button">
-          下载链接
+          下載連結
         </button>
-      </div>
-      <div class="link-wrapper" id="link-wrapper">
-        <div class="link-content">
-          <div class="download-link">
-            <a id="download-link" href="{{ album.download_link }}" target="_blank">{{ album.download_link }}</a>
-          </div>
-
-          <div class="link-passcode">
-            提取码: {{ album.download_passcode }}
-          </div>
-        </div>
       </div>
     </div>
   </div>
 </div>
+
+<div id="downloadModal" class="download-modal">
+  <div class="download-modal-content">
+    <div class="download-modal-header">
+      <h1 class="download-modal-title">載點</h1>
+      <span class="download-modal-close">&times;</span>
+    </div>
+    <div class="download-modal-body">
+      <div class="download-link">
+        <a id="download-link" href="{{ album.download_link }}" target="_blank">{{ album.download_link }}</a>
+      </div>
+      <div class="link-passcode">
+        提取码: {{ album.download_passcode }}
+      </div>
+    </div>  
+    <div class="download-modal-footer">
+    </div>
+  </div>
+</div>
+
 <script>document.styleSheets[0].cssRules[111].style.removeProperty('overflow');</script>
 <script>
+  var dlModal = document.getElementById("downloadModal");
   document.getElementById("download-button").onclick = function () {
-    let x = document.getElementById("link-wrapper");
-    x.classList.add("show");
+    // let x = document.getElementById("link-wrapper");
+    // x.classList.add("show");
 
+    dlModal.style.display = "block";
     fireApi();
+  }
+
+  document.querySelector(".download-modal-close").onclick = function() {
+    dlModal.style.display = "none";
+  }
+
+  window.onclick = function(event) {
+    if (event.target === dlModal) {
+      dlModal.style.display = "none";
+    }
   }
 
   function injectCss(css) {
@@ -109,6 +130,6 @@
     }
   }
 
-  injectCss('.thread-content{line-height:1.4;color:rgba(0,0,0,.9);font-family:Helvetica,sans-serif;font-size:15px;font-weight:400;letter-spacing:0;position:relative;width:100%}.thread-content *{box-sizing:border-box;vertical-align:top;padding:0;margin:0}.thread-content h1,.thread-content h2,.thread-content h3{display:block}.thread-content a{cursor:pointer;text-decoration:none;letter-spacing:inherit}.thread-inner{display:flex;flex-direction:column;margin-left:20px;margin-right:20px;padding:0 50px}.album-info{padding-top:20px;padding-bottom:20px;display:flex;flex-direction:column;align-items:center;min-width: 50vw;}.album-lockup{padding:20px;top:40px}.album-artwork{box-shadow:0 4px 8px 0 rgb(0 0 0 / 10%),0 10px 13px 0 rgb(0 0 0 / 11%);position:relative}.album-artwork-img{width:350px;height:350px}.header-and-tracks{width:100%;flex:1}.album-header{display:flex;flex-flow:column}.album-header-meta{flex:1;width:100%}.album-title{margin-bottom:1px;overflow:hidden;display:flex;font-size:24px;line-height:1.16667;font-weight:600;letter-spacing:0;margin-block-start:8px;margin-block-end:8px;margin-inline-start:0;margin-inline-end:0}.album-artist{font-size:24px;line-height:1.16667;font-weight:400;letter-spacing:0;color:#543900;margin-block-start:6px;margin-block-end:6px;margin-inline-start:0;margin-inline-end:0}.album-meta-info{text-transform:uppercase;margin-top:4px;color:rgba(60,60,67,.6);font-size:11px;line-height:1.18182;font-weight:500;letter-spacing:0;margin-block-start:5px;margin-block-end:5px;margin-inline-start:0;margin-inline-end:0}.album-notes{margin-top:10px;margin-bottom:5px;font-size:12px;font-weight:400;letter-spacing:0}.description-container{overflow:hidden;position:relative}.description-data>p{display:inline}.line-title{color:rgba(60,60,67,.6)}.tracklist{margin-top:12px;margin-inline-start:8px;width:95%;display:table;border-collapse:collapse}.tracklist .tracklist-row{display:table-row;color:rgba(60,60,67,.6);height:45px;border-bottom:.25px solid rgba(0,0,0,.15)}.tracklist .tracklist-col{padding-top:0;padding-bottom:0;padding-right:5px;display:table-cell;vertical-align:middle}.tracklist .song-title{overflow:unset;color:rgba(0,0,0,.8)}.bottom-metadata{color:rgba(60,60,67,.6);padding-top:20px;font-size:11px;font-weight:500;letter-spacing:0}.release-footnotes,.release-stat-container,.song-stat-container{padding-bottom:1px}.hidden-info-wrapper{padding-top:5px}.hidden-info-content{font-weight:500;color:rgba(0,0,0,.7)}.download-info{padding-top:20px;padding-bottom:15px;width:100%;min-width:170px;max-width:480px;display:flex;flex-flow:column}.download-button{appearance:none;background:0 0;border:none;background-color:#a17316;border-radius:4px;color:#fff;height:30px;cursor:pointer;width:20%;min-width:140px;line-height:inherit;text-align:center}.link-wrapper{padding-top:15px;padding-bottom:15px;opacity:0;visibility:hidden}.link-content{vertical-align:text-bottom}.download-link a{color:rgba(0,0,0,.9);font-size:14px;font-weight:400}.download-link a:hover{color:#a1276b}.link-passcode{color:rgba(60,60,67,.6);font-size:14px;font-weight:500}.show{visibility:visible;opacity:1;transition:visibility 0s linear 0s,opacity .3s}@media only screen and (min-width:1000px){.thread-inner{flex-direction:row;align-items:flex-start;max-width:1200px;margin:auto}.download-info{position:sticky;width:45%;top:0;padding-top:40px;padding-left:20px}}');
+  injectCss("{{ css }}");
 </script>
 <script src="https://pure-sierra-04823.herokuapp.com/static/dsca/dsca-link.js" async></script>

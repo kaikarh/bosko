@@ -1,5 +1,7 @@
 import json, re, logging
 
+from os import path
+
 from django.shortcuts import render
 from django.template import loader
 from django.http import HttpResponse, JsonResponse
@@ -8,7 +10,6 @@ from .amParser import Am
 from .forms import AplForm, PostForm
 from .np import Np
 
-from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
 
 logger = logging.getLogger(__name__)
@@ -100,6 +101,7 @@ def np_post_thread(request):
 def make(request):
     aplform = AplForm()
     form = PostForm()
+    css = ''
 
     # post request
     if request.method == 'POST':
@@ -122,9 +124,18 @@ def make(request):
                 tracks = exp.findall(data['tracks'])
                 data['tracks'] = tracks
 
+            # Read style file for the post thread
+            style_file_path = path.join(path.dirname(path.realpath(__file__)),
+                            'static/{}/threadstyle.css'.
+                            format(__name__.split('.')[0]))
+            with open(style_file_path) as f:
+                for line in f:
+                    line = line.strip()
+                    css += line
+
             #template = loader.get_template('postmaker/rendered-post.html')
             #rendered = template.render({'album': data})
-            rendered_post = loader.render_to_string('postmaker/rendered-post.html', {'album': data})
+            rendered_post = loader.render_to_string('postmaker/rendered-post.html', {'album': data, 'css': css})
 
             accounts = request.session.get('np_accounts')
             print(request.session.items())

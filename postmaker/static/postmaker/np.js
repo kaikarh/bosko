@@ -33,6 +33,9 @@ document.getElementById("np-login").onclick = () => {
     })
     .then((response) => {
         loadingBtn.parentElement.replaceChild(btn, loadingBtn);
+        // reset the form
+        document.getElementById("np-username").value = "";
+        document.getElementById("np-password").value = "";
         if (response.ok) {
             return response.json();
         } else {
