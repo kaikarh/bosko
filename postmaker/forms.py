@@ -29,9 +29,10 @@ class PostForm(forms.Form):
     year = forms.CharField(max_length=4, required=False)
     rip_info = forms.CharField(required=False)
     arc_info = forms.CharField(required=False)
+    hidden_info = forms.CharField(required=False)
+    stream_url = forms.URLField(required=False)
     download_link = forms.URLField(required=False)
     download_passcode = forms.CharField(max_length=4, required=False)
-    hidden_info = forms.CharField(required=False)
     description = forms.CharField(widget=forms.Textarea, required=False)
     tracks = forms.CharField(widget=forms.Textarea, required=False)
     apple_tracks = forms.CharField(widget=forms.Textarea(attrs={'readonly':'readonly'}), required=False)
@@ -46,8 +47,6 @@ class PostForm(forms.Form):
                                  'vinyl / scene / flac',
                                  'tape / scene / mp3'],
             'arc_info_options': ['zip / password protected',
-                                 'zip',
-                                 'rar / password protected',
                                  'rar'],
             'hidden_info_options': ['密码：needpop.com',
                                     'Password: needpop.com',],

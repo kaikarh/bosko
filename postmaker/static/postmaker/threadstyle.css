@@ -305,6 +305,10 @@
     border-top: 1px solid #dee2e6;
 }
 
+.streaming {
+    margin-bottom: 2rem;
+}
+
 @media only screen and (min-width: 576px) {
     .download-modal-content {
         margin: 6.75rem auto;
@@ -318,6 +322,10 @@
         align-items: flex-start;
         max-width: 1200px;
         margin: auto;
+    }
+
+    .streaming {
+        margin-top: 1rem;
     }
 
     .download-info {
