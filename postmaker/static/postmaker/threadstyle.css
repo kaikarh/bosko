@@ -331,6 +331,7 @@
     .download-info {
         position: sticky;
         width: 45%;
+        min-width: 300px;
         top: 0;
         padding-top: 40px;
         padding-left: 20px;
