@@ -5,10 +5,12 @@ from os import path
 from django.shortcuts import render
 from django.template import loader
 from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 from .amParser import Am
 from .forms import AplForm, PostForm
 from .np import Np
+from .baal import Baal
 
 # Create your views here.
 
@@ -55,7 +57,6 @@ def np_login(request):
             logger.info('login token is: {}'.format(auth))
             if not request.session.get('np_accounts', False):
                 request.session['np_accounts'] = {}
-                
             request.session['np_accounts'][credential['username']] = auth
             request.session.save()
             return JsonResponse({"cdb_auth": auth})
@@ -151,3 +152,23 @@ def make(request):
     # normal get request - render an empty form
     return render(request, 'postmaker/make-post.html', {'form': form, 'aplfrm': aplform})
 
+@csrf_exempt
+def get_share_link(request):
+    # JSON api for generating share link on baidu pan
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        credential = {
+            'bduss': data.get('bduss'),
+            'stoken': data.get('stoken')
+        }
+        filename = data.get('filename')
+
+        b = Baal(credential)
+        link = b.generate_link(filename)
+
+        if link:
+            return JsonResponse(link)
+        else:
+            return JsonResponse({'error': 1, 'message': 'Can\'t generate link'})
+
+    return JsonResponse({'error': 1, 'message': 'Unsupported method'}, status=400)
