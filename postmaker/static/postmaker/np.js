@@ -93,9 +93,28 @@ document.getElementById("np-post-thread").onclick = () => {
         var titleElm = document.createElement("a");
         titleElm.href = content["url"];
         titleElm.innerText = content["title"];
+        set_posted();
         msg_box.appendChild(titleElm);
     })
     .catch((error) => {
         msg_box.innerText = error;
     });
+
+}
+
+function set_posted() {
+    var pk = document.getElementById("pk").value;
+    var posted_api_url = "/postmaker/api/set-posted"
+    csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    data = {
+        "pk": pk
+    }
+    fetch(posted_api_url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json',
+          'X-CSRFToken': csrftoken },
+        body: JSON.stringify(data)
+    }).then((response) => {
+        console.log(response);
+    })
 }

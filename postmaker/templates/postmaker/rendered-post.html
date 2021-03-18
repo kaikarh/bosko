@@ -17,12 +17,14 @@
           <div class="album-notes">
             <div class="description-container">
               <div class="description-data">
-                <p>
-                  <span class="line-title">
-                    介紹
-                  </span>
-                  {{ album.description }}
-                </p>
+                {% if album.description %}
+                  <p>
+                    <span class="line-title">
+                      介紹
+                    </span>
+                    {{ album.description }}
+                  </p>
+                {% endif %}
               </div>
             </div>
           </div>
@@ -34,9 +36,15 @@
             <div class="tracklist-col song-index">
               <span>{{ forloop.counter }}</span>
             </div>
-            <div class="tracklist-col song-title">
-              <div>{{ track }}</div>
-            </div>
+            {% if track.name %}
+              <div class="tracklist-col song-title">
+                <div>{{ track.name }}</div>
+              </div>
+            {% else %}
+              <div class="tracklist-col song-title">
+                <div>{{ track }}</div>
+              </div>
+            {% endif %}
           </div>
           {% endfor %}
         </div>
@@ -46,16 +54,33 @@
             共 {{ album.tracks|length }} 首
           </div>
           <div class="release-stat-container">
-            {{ album.rip_info|upper }}
+            {% if album.parsed_rls.web %}
+              WEB / SCENE / MP3 320K
+            {% elif album.archive_name %}
+              CD / SCENE / MP3 V0
+            {% else %}
+              {{ album.rip_info|upper }}
+            {% endif %}
           </div>
           <div class="release-footnotes">
-            {{ album.arc_info|upper }}
+            {% if album.archive_name %}
+              ZIP / PASSWORD PROTECTED 
+              {% if album.archive_size > 0 %}
+              / {{ album.archive_size|filesizeformat }}
+              {% endif %}
+            {% else %}
+              {{ album.arc_info|upper }}
+            {% endif %}
           </div>
           {% if album.hidden_info %}
           <div class="hidden-info-wrapper">
             [hide]
             <div class="hidden-info-content">
-              {{ album.hidden_info }}
+              {% if album.archive_name %}
+                密码：needpop.com
+              {% else %}
+                {{ album.hidden_info }}
+              {% endif %}
             </div>
             [/hide]
           </div>

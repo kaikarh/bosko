@@ -36,8 +36,12 @@
             <li class="nav-item">
               <a class="nav-link {% if request.resolver_match.app_name == 'dsca' %} active {% endif %}" href="{% url 'dsca:index' %}">dsca</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link {% if request.resolver_match.app_name == 'postmaker' %} active {% endif %}" href="{% url 'postmaker:make' %}">postmaker</a>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle {% if request.resolver_match.app_name == 'postmaker' %} active {% endif %}" id="navbarDropdown" role="button" data-bs-toggle="dropdown" href="#">postmaker</a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="{% url 'postmaker:make' %}">Make</a></li>
+                <li><a class="dropdown-item" href="{% url 'postmaker:release_list' %}">Releases</a></li>
+              </ul>
             </li>
           </ul>
         </div>

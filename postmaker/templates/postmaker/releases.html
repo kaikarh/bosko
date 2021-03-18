@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% load static %}
+
+{% block title %}
+Releases | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-5">
+  <h1>Release List</h1>
+  <ul class="list-group">
+    {% for r in release_list %}
+      <li class="list-group-item">
+        <a href="{% url 'postmaker:release_detail' r.pk %}">
+          <input class="form-check-input me-1" type="checkbox" 
+          {% if r.posted %}checked{% endif %}>
+          {{ r.time|date:"SHORT_DATETIME_FORMAT" }}:
+          {{ r }}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}
