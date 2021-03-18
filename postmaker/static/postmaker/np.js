@@ -93,7 +93,7 @@ document.getElementById("np-post-thread").onclick = () => {
         var titleElm = document.createElement("a");
         titleElm.href = content["url"];
         titleElm.innerText = content["title"];
-        set_posted();
+        set_posted(content["url"]);
         msg_box.appendChild(titleElm);
     })
     .catch((error) => {
@@ -102,13 +102,14 @@ document.getElementById("np-post-thread").onclick = () => {
 
 }
 
-function set_posted() {
+function set_posted(t_url) {
     if (document.getElementById("pk")) {
         var pk = document.getElementById("pk").value;
-        var posted_api_url = "/postmaker/api/set-posted"
+        var posted_api_url = "/postmaker/api/set-posted";
         csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         data = {
-            "pk": pk
+            "pk": pk,
+            "url": t_url
         }
         fetch(posted_api_url, {
             method: 'POST',

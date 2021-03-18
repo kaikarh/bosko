@@ -14,7 +14,7 @@ from django.db.utils import IntegrityError
 
 from .models import Release
 from .amParser import Am
-from .forms import AplForm, PostForm
+from .forms import AplForm, PostForm, ReleaseForm
 from .np import Np
 from .baal import Baal
 from .tonos import Tonos
@@ -107,13 +107,24 @@ def np_post_thread(request):
     return HttpResponse('Bad Request', status=400)
 
 class ReleaseList(ListView):
-    model = Release
+    #model = Release
     context_object_name = 'release_list'
     template_name = 'postmaker/releases.html'
+    queryset = Release.objects.order_by('-time')
 
 class ReleaseDetailView(DetailView):
     model = Release
     template_name = 'postmaker/release-detail.html'
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super().get_context_data(**kwargs)
+        form = ReleaseForm(instance=context['release'])
+        context['form'] = form
+        return context
+
+class ReleaseDetailMakeView(DetailView):
+    model = Release
+    template_name = 'postmaker/release-detail-make.html'
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
@@ -150,9 +161,17 @@ def set_posted(request):
     if request.method == 'POST':
         content = json.loads(request.body)
         pk = content.get('pk')
+        url = content.get('url', '')
         release = Release.objects.get(pk=pk)
         release.posted = True
-        release.save()
+        release.post_url = url
+        try:
+            release.full_clean()
+            release.save()
+        except (ValidationError, IntegrityError) as error:
+            logger.info('Invalid record: {}'.format(error))
+        except:
+            logger.info('Write to database failed')
         return JsonResponse({"error": 0})
 
     return HttpResponse('Bad Request', status=400)
@@ -378,7 +397,8 @@ def auto_post(release, tonos):
                 forum_id=45,
                 typeid=typeid)
 
-
+    if post:
+        release.post_url = post.get('url', '')
     release.posted = True
     return {'error': None}
 

@@ -1,5 +1,7 @@
 from django import forms
 
+from .models import Release
+
 # custom widget with datalist
 class ListTextWidget(forms.TextInput):
     def __init__(self, data_list, name, *args, **kwargs):
@@ -60,3 +62,16 @@ class PostForm(forms.Form):
         # bootstrap pretty form
         for field in self.visible_fields():
             field.field.widget.attrs['class'] = 'form-control'
+
+
+class ReleaseForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(ReleaseForm, self).__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
+
+    class Meta:
+        model = Release
+        fields = ['release_name', 'archive_name', 'archive_size',
+                  'stream_song_name', 'stream_song_url', 'share_link',
+                  'share_link_passcode', 'adam_id',  'post_url']
