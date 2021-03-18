@@ -1,7 +1,10 @@
-
 {% extends "layout.html" %}
 
 {% load static %}
+
+{% block header %}
+<script type="text/javascript" src="{% static 'postmaker/script.js' %}" async></script>
+{% endblock %}
 
 {% block title %}
 {{ release }}| {{ block.super }}

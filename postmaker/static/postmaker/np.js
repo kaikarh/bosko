@@ -103,18 +103,20 @@ document.getElementById("np-post-thread").onclick = () => {
 }
 
 function set_posted() {
-    var pk = document.getElementById("pk").value;
-    var posted_api_url = "/postmaker/api/set-posted"
-    csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    data = {
-        "pk": pk
+    if (document.getElementById("pk")) {
+        var pk = document.getElementById("pk").value;
+        var posted_api_url = "/postmaker/api/set-posted"
+        csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        data = {
+            "pk": pk
+        }
+        fetch(posted_api_url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken },
+            body: JSON.stringify(data)
+        }).then((response) => {
+            console.log(response);
+        })
     }
-    fetch(posted_api_url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json',
-          'X-CSRFToken': csrftoken },
-        body: JSON.stringify(data)
-    }).then((response) => {
-        console.log(response);
-    })
 }

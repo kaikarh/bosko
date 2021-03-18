@@ -1,6 +1,6 @@
 import json, re, logging
 
-from os import path
+from os import path, environ
 from datetime import datetime
 
 from django.shortcuts import render
@@ -332,6 +332,7 @@ def auto_post(release, tonos):
     data['album_info']['download_link'] = release.share_link
     data['album_info']['download_passcode'] = release.share_link_passcode
     data['album_info']['stream_url'] = release.stream_song_url
+    data['album_info']['hidden_info'] = '密码：needpop.com'
 
     # for template to get resource (WEB)
     data['album_info']['parsed_rls'] = data['parsed_rls']
@@ -371,7 +372,7 @@ def auto_post(release, tonos):
     if typeid == 0:
         typeid = 89
 
-    np = Np(cdb_auth='')
+    np = Np(cdb_auth=environ.get('AUTOPOSTER'))
     post = np.post_thread(thread_subject.encode('gbk', 'ignore'),
                 rendered_post.encode('gbk', 'ignore'),
                 forum_id=45,
