@@ -33,7 +33,10 @@ class Np:
         return res
 
     def __get_page_and_parse(self, url):
-        return bs4.BeautifulSoup(self.__get_page(url).text, 'html.parser')
+        html = self.__get_page(url)
+        if html:
+            return bs4.BeautifulSoup(html.text, 'html.parser')
+        return ''
 
     def __post_page(self, url, *args, **kwargs):
         try:
@@ -45,7 +48,10 @@ class Np:
         return res
 
     def __post_page_and_parse(self, url, *args, **kwargs):
-        return bs4.BeautifulSoup(self.__post_page(url, *args, **kwargs).text, 'html.parser')
+        html = self.__post_page(url, *args, **kwargs)
+        if html:
+            return bs4.BeautifulSoup(html.text, 'html.parser')
+        return ''
 
     def login(self, account):
         # Login to forum
@@ -137,15 +143,22 @@ class Np:
         payload['subject'] = subject
         payload['message'] = message
         payload['typeid'] = typeid
-        
+
         # get formhash
         compose_url = self.compose_url_base.format(forum_id)
         compose_page = self.__get_page_and_parse(compose_url)
-        payload['formhash'] = compose_page.form.find('input', attrs={'name': 'formhash'}).attrs['value']
+        try:
+            payload['formhash'] = compose_page.form.find('input', attrs={'name': 'formhash'}).attrs['value']
+        except:
+            return False
 
         submit_url = parse.urljoin(self.host_url, compose_page.form.attrs['action'])
         res = self.__post_page(submit_url, data=payload)
-        view_page = bs4.BeautifulSoup(res.text, 'html.parser')
+
+        try:
+            view_page = bs4.BeautifulSoup(res.text, 'html.parser')
+        except:
+            return False
 
         try:
             wrapper = view_page.find('tr', {'class': 'header'}).td
@@ -162,5 +175,5 @@ class Np:
                 title = wrapper.contents[-1].strip().split('\n')[-1]
         except AttributeError as err:
             return False
-        
+
         return {'url': res.url, 'title': title}

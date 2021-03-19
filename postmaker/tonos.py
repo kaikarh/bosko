@@ -4,6 +4,7 @@
 # - itunes api wrapper
 
 import sys, re, requests, json, logging, unicodedata
+from difflib import SequenceMatcher
 from pprint import pformat
 
 logging.basicConfig(level=logging.DEBUG,
@@ -104,17 +105,28 @@ class Tonos:
     def check_validity(self):
         parsed_rls = self.data.get('parsed_rls')
         album_info = self.data.get('album_info')
-        if parsed_rls and album_info:
-            if self._strip_stylization(parsed_rls['artist']) in \
-                    self._strip_stylization(self._normalize_accented(album_info['artist'])):
-                # Probably got a accurate result
-                # Continue to query album info
-                logger.debug('Matched Artist Name, continuing')
-                if self._strip_stylization(parsed_rls['title']) in \
-                        self._strip_stylization(
-                            self._normalize_accented(album_info['title'])):
-                    logger.debug('Matched album Name, continuing')
-                    return True
+        try:
+            release = '{} {}'.format(parsed_rls['artist'], parsed_rls['title'])
+            fetched = '{} {}'.format(album_info['artist'], album_info['title'])
+        except:
+            return False
+
+        logger.debug('Checking: {} vs {}'.format(release, fetched))
+        m = SequenceMatcher(None, release, fetched)
+        if m.ratio() >= 0.9:
+            return True
+
+        #if parsed_rls and album_info:
+        #    if self._strip_stylization(parsed_rls['artist']) in \
+        #            self._strip_stylization(self._normalize_accented(album_info['artist'])):
+        #        # Probably got a accurate result
+        #        # Continue to query album info
+        #        logger.debug('Matched Artist Name, continuing')
+        #        if self._strip_stylization(parsed_rls['title']) in \
+        #                self._strip_stylization(
+        #                    self._normalize_accented(album_info['title'])):
+        #            logger.debug('Matched album Name, continuing')
+        #            return True
         return False
 
     def get_adam_id(self, rls_name):

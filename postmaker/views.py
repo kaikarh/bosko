@@ -377,24 +377,28 @@ def auto_post(release, tonos):
         'R&B': 90,
         'Hip-hop Rap': 91,
         'Pop': 83,
-        'Rock': 84,
+        'Rock Metal': 84,
         'Dance House': 87,
         'Electronic': 88
     }
-    typeid = 0
+    typeid = 89
     for key in genre:
         option = key.split()
         for i in option:
             if i in data['album_info']['genre']:
                 typeid = genre[key]
                 break
-    if typeid == 0:
-        typeid = 89
+
+    forum_id = 45
+    if data['parsed_rls'].get('lang') == 'KR' or \
+            data['parsed_rls'].get('lang') == 'JP':
+        typeid = 66
+        forum_id = 59
 
     np = Np(cdb_auth=environ.get('AUTOPOSTER'))
     post = np.post_thread(thread_subject.encode('gbk', 'ignore'),
                 rendered_post.encode('gbk', 'ignore'),
-                forum_id=45,
+                forum_id=forum_id,
                 typeid=typeid)
 
     if post:
