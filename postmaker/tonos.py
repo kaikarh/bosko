@@ -106,8 +106,8 @@ class Tonos:
         parsed_rls = self.data.get('parsed_rls')
         album_info = self.data.get('album_info')
         try:
-            release = '{} {}'.format(parsed_rls['artist'], parsed_rls['title'])
-            fetched = '{} {}'.format(album_info['artist'], album_info['title'])
+            release = '{} {}'.format(parsed_rls['artist'].lower(), parsed_rls['title'].lower())
+            fetched = '{} {}'.format(album_info['artist'].lower(), album_info['title'].lower())
         except:
             return False
 
