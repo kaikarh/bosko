@@ -358,7 +358,7 @@ def auto_post(release, tonos):
     # Trim date time to date
     release_date = datetime.fromisoformat(data['album_info']['releaseDate'].
                                           replace('Z', '+00:00'))
-    data['album_info']['year'] = release_date.date()
+    data['album_info']['year'] = str(release_date.date())
     # Fix art work resolution
     data['album_info']['artwork'] = data['album_info']['artwork']. \
         replace('100x100bb.jpg', '600x600bb.jpg')
