@@ -42,7 +42,7 @@ class Tonos:
                 'web': True if match.group(4) else False,
                 'artist': match.group(1).replace('_', ' '),
                 'title': match.group(2).replace('_', ' '),
-                'lang': match.group(6)
+                'lang': match.group(6) if match.group(6) else match.group(3)
             }
         logger.info('Cannot parse release name (Regex did not match anything)')
         return False
