@@ -113,7 +113,7 @@ class Tonos:
 
         logger.debug('Checking: {} vs {}'.format(release, fetched))
         m = SequenceMatcher(None, release, fetched)
-        if m.ratio() >= 0.9:
+        if m.ratio() >= 0.85:
             return True
 
         #if parsed_rls and album_info:
