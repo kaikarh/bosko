@@ -33,7 +33,7 @@ class Tonos:
         # group4 -> WEB
         # group5 -> FLAC
 
-        match = re.search('([\w\.\-]*?)\-{1,2}([\w\(\)]*?)(?:\-\(.*\))?(?:\-([A-Z]{2}))?(?:\-(?:(WEB)|(?:\d?CD)|(?:CDEP)))?(?:\-\d{2}BIT)?(?:\-(?:WEB)?(FLAC))?(?:\-([A-Z]{2}))?\-(?:\d{4})\-(?:[\w\_]+)', rls_name)
+        match = re.search('([\w\.\-]*?)\-{1,2}([\w\.\-\(\)]*?)(?:\-\([A-Z\-\_\d]+\))?(?:\-([CNJPKR]{2}))?(?:\-(?:(WEB)|(?:\d?CD)|(?:CDEP)))?(?:\-\d{2}BIT)?(?:\-(?:WEB)?(FLAC))?(?:\-([A-Z]{2}))?\-(?:\d{4})\-(?:[\w\_]+)', rls_name)
 
         if match:
             logger.debug('Regex match result {}'.format(match.groups()))
