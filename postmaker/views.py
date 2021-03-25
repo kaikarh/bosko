@@ -375,7 +375,7 @@ def auto_post(release, tonos):
     genre = {
         'Alternative Indie': 86,
         'R&B': 90,
-        'Hip-hop Rap': 91,
+        'Hip-Hop Rap': 91,
         'Pop': 83,
         'Rock Metal Punk': 84,
         'Dance House': 87,
