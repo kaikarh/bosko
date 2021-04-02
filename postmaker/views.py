@@ -325,6 +325,9 @@ def new_release_ping(request):
     return JsonResponse({'error': 1, 'message': 'Unsupported method'}, status=400)
 
 def auto_post(release, tonos):
+    # Check if got a hit on album api
+    if not release.adam_id:
+        raise Exception('Not found on Apple music')
     # Check duplicate
     dupe = chk_rls_dup(release)
     if dupe:
