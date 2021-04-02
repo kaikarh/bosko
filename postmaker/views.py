@@ -328,9 +328,10 @@ def auto_post(release, tonos):
     # Check duplicate
     dupe = chk_rls_dup(release)
     if dupe:
-        return {'error': 'Duplicate found', 'dupe': dupe}
+        logger.warning(f'Dupe: {dupe}')
+        raise Exception('Duplication')
     if not chk_validity(tonos):
-        return {'error': 'Search Result Validation Failed'}
+        raise Exception('Search Result Validation Failed')
 
     # All Clear!
     print('Release {} clear for autopost!'.format({release.release_name}))
