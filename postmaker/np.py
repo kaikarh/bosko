@@ -147,33 +147,23 @@ class Np:
         # get formhash
         compose_url = self.compose_url_base.format(forum_id)
         compose_page = self.__get_page_and_parse(compose_url)
-        try:
-            payload['formhash'] = compose_page.form.find('input', attrs={'name': 'formhash'}).attrs['value']
-        except:
-            return False
-
+        payload['formhash'] = compose_page.form.find('input', attrs={'name': 'formhash'}).attrs['value']
         submit_url = parse.urljoin(self.host_url, compose_page.form.attrs['action'])
         res = self.__post_page(submit_url, data=payload)
 
-        try:
-            view_page = bs4.BeautifulSoup(res.text, 'html.parser')
-        except:
-            return False
+        view_page = bs4.BeautifulSoup(res.text, 'html.parser')
 
-        try:
-            wrapper = view_page.find('tr', {'class': 'header'}).td
-            # get title
-            if len(wrapper.contents) <= 1:
-                # server returned a login form
-                logger.info('Post Failed: User not logged in or wrong credential')
-                return False
-            elif len(wrapper.contents) > 3:
-                # forums that have typeid
-                title = wrapper.contents[-2].get_text() + wrapper.contents[-1]
-            else:
-                # forums that dont have typeid
-                title = wrapper.contents[-1].strip().split('\n')[-1]
-        except AttributeError as err:
-            return False
+        wrapper = view_page.find('tr', {'class': 'header'}).td
+        # get title
+        if len(wrapper.contents) <= 1:
+            # server returned a login form
+            logger.warning('Post Failed: User not logged in or wrong credential')
+            raise Exception('Post Failed')
+        elif len(wrapper.contents) > 3:
+            # forums that have typeid
+            title = wrapper.contents[-2].get_text() + wrapper.contents[-1]
+        else:
+            # forums that dont have typeid
+            title = wrapper.contents[-1].strip().split('\n')[-1]
 
         return {'url': res.url, 'title': title}

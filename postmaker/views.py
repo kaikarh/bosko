@@ -94,15 +94,16 @@ def np_post_thread(request):
         content = json.loads(request.body)
         auth = content.get('cdb_auth')
         np = Np(cdb_auth=auth)
-        post = np.post_thread(content.get('subject').encode('gbk', 'ignore'),
-                    content.get('message').encode('gbk', 'ignore'),
-                    forum_id=content.get('forum_id'),
-                    typeid=content.get('typeid'))
-
-        if post:
-            return JsonResponse(post)
-        else:
+        try:
+            post = np.post_thread(content.get('subject').encode('gbk', 'ignore'),
+                        content.get('message').encode('gbk', 'ignore'),
+                        forum_id=content.get('forum_id'),
+                        typeid=content.get('typeid'))
+        except Exception as err:
+            logger.warning(err)
             return JsonResponse({"error": "error posting"}, status=400)
+
+        return JsonResponse(post)
 
     return HttpResponse('Bad Request', status=400)
 
@@ -305,10 +306,10 @@ def new_release_ping(request):
                         share_link_passcode=data.get('link_pwd', ''),
                         adam_id=(a_id if a_id else ''))
 
-            autopost = auto_post(r, tonos)
-            if autopost.get('error'):
-                logger.warning('Failed to auto post {}:\n {}'.
-                               format(r.release_name, autopost['error']))
+            try:
+                auto_post(r, tonos)
+            except Exception as err:
+                logger.warning('Failed to auto post {}:\n - {}'.format(r.release_name, err))
 
             # Save to database
             try:
@@ -396,15 +397,26 @@ def auto_post(release, tonos):
         forum_id = 59
 
     np = Np(cdb_auth=environ.get('AUTOPOSTER'))
-    post = np.post_thread(thread_subject.encode('gbk', 'ignore'),
-                rendered_post.encode('gbk', 'ignore'),
-                forum_id=forum_id,
-                typeid=typeid)
 
-    if post:
-        release.post_url = post.get('url', '')
-    release.posted = True
-    return {'error': None}
+    # Try to post thread
+    # retry if failed
+    for attempt in range(3):
+        try:
+            post = np.post_thread(thread_subject.encode('gbk', 'ignore'),
+                        rendered_post.encode('gbk', 'ignore'),
+                        forum_id=forum_id,
+                        typeid=typeid)
+
+            release.post_url = post.get('url', '')
+            release.posted = True
+        except Exception as err:
+            logger.info(err)
+            logger.warning('Post Failed attempt {}/3'.format(attempt+1))
+        else:
+            break
+    else:
+        logger.warning('All post attempt failed')
+        raise Exception('All post attempt failed')
 
 def compose_post(release):
     pass
