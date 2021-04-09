@@ -13,9 +13,8 @@ class Np:
         # setup the session connection
         self.host_url = 'http://needpop.com'
         self.login_url = parse.urljoin(self.host_url, '/logging.php?action=login')
-        self.compose_url_base = parse.urljoin(
-            self.host_url,
-            '/post.php?action=newthread&fid={}&extra=page%3D1')
+        self.compose_url_base = parse.urljoin(self.host_url,
+                                '/post.php?action=newthread&fid={}&extra=page%3D1')
         self.s = requests.Session()
         self.s.headers = {'user-agent': 'Mozilla/5.0 (Windows NT 6.0) Gecko/20100101 Firefox/14.0.1'}
 

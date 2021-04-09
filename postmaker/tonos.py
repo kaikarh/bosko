@@ -94,8 +94,8 @@ class Tonos:
                     song['name'] = record['trackName']
                     song['trackNumber'] = record['trackNumber']
                     song['duration'] = record['trackTimeMillis']
-                    if record['isStreamable']:
-                        song['previewUrl'] = record['previewUrl']
+                    #if record['isStreamable']:
+                    #    song['previewUrl'] = record['previewUrl']
 
                     data['tracks'].append(song)
 

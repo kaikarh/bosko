@@ -382,7 +382,7 @@ def auto_post(release, tonos):
         'R&B Soul': 90,
         'Hip-Hop Rap': 91,
         'Pop': 83,
-        'Rock Metal Punk': 84,
+        'Rock Metal Punk Ska': 84,
         'Dance House': 87,
         'Electronic': 88
     }
