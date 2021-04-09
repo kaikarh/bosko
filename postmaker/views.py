@@ -378,7 +378,7 @@ def auto_post(release, tonos):
                                            data['album_info']['title'],
                                            release_date.year)
     genre = {
-        'Alternative Indie Songwriter': 86,
+        'Alternative Indie Songwriter Psychedelic': 86,
         'R&B Soul': 90,
         'Hip-Hop Rap': 91,
         'Pop': 83,
