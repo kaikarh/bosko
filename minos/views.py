@@ -14,6 +14,8 @@ from utils.tonos import Tonos
 from .models import *
 from .serializers import AlbumSerializer
 
+logger = logging.getLogger(__name__)
+
 def serialize_all_data():
     data = []
     records = Album.objects.filter().order_by('-date')
