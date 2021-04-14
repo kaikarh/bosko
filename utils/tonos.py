@@ -33,7 +33,7 @@ class Tonos:
         # group4 -> WEB
         # group5 -> FLAC
 
-        match = re.search('([\w\.\-]*?)\-{1,2}([\w\.\-\(\)]*?)(?:\-\([A-Z\-\_\d]+\))?(?:\-([CNJPKR]{2}))?(?:\-(?:(WEB)|(?:\d?CD)|(?:CDEP)))?(?:\-\d{2}BIT)?(?:\-(?:WEB)?(FLAC))?(?:\-([A-Z]{2}))?\-(?:\d{4})\-(?:[\w\_]+)', rls_name)
+        match = re.search('([\w\.\-]*?)\-{1,2}([\w\.\-\(\)]*?)(?:\-\([A-Z\-\_\d]+\))?(?:\-([CNJPKRES]{2}))?(?:\-(?:(WEB)|(?:\d?CD)|(?:CDEP)))?(?:\-\d{2}BIT)?(?:\-(?:WEB)?(FLAC))?(?:\-([A-Z]{2}))?\-(\d{4})\-(?:[\w\_]+)', rls_name)
 
         if match:
             logger.debug('Regex match result {}'.format(match.groups()))
@@ -42,7 +42,8 @@ class Tonos:
                 'web': True if match.group(4) else False,
                 'artist': match.group(1).replace('_', ' '),
                 'title': match.group(2).replace('_', ' '),
-                'lang': match.group(6) if match.group(6) else match.group(3)
+                'lang': match.group(6) if match.group(6) else match.group(3),
+                'year': match.group(7),
             }
         logger.info('Cannot parse release name (Regex did not match anything)')
         return False
@@ -102,7 +103,7 @@ class Tonos:
             return data
         return False
 
-    def check_validity(self):
+    def check_validity(self, threshold=0.85):
         parsed_rls = self.data.get('parsed_rls')
         album_info = self.data.get('album_info')
         try:
@@ -113,7 +114,7 @@ class Tonos:
 
         logger.debug('Checking: {} vs {}'.format(release, fetched))
         m = SequenceMatcher(None, release, fetched)
-        if m.ratio() >= 0.85:
+        if m.ratio() >= threshold:
             return True
 
         #if parsed_rls and album_info:

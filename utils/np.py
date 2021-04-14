@@ -52,6 +52,25 @@ class Np:
             return bs4.BeautifulSoup(html.text, 'html.parser')
         return ''
 
+    def __get_all_fields_in_form(self, form):
+        result = {}
+        fields = form.find_all('input')
+        for field in fields:
+            # get all fields that are to be posted in request
+            if field.attrs.get('name'):
+                # ignore unchecked radio button
+                if field.attrs.get('type') == 'radio':
+                    try:
+                        checked = field.attrs['checked']
+                    except KeyError:
+                        continue
+                # ignore buttons
+                if field.attrs.get('type') == 'button':
+                    continue
+                result[field.attrs['name']] = field.attrs['value']
+                logger.debug('{:<12} {:<20}'.format(field.attrs['name'], field.attrs['value']))
+        return result
+
     def login(self, account):
         # Login to forum
         # Takes in an account dict containing username and password
@@ -124,6 +143,23 @@ class Np:
 
         # logout
         return (self.__get_page(parse.urljoin(self.host_url, logout_button.attrs['href']))).cookies
+
+    def edit_thread(self, thread_url, subject, message):
+        soup = self.__get_page_and_parse(thread_url)
+        # Look for the edit button and get the compose url
+        compose_url = parse.urljoin(self.host_url, soup.find('a', text='编辑').attrs['href'])
+        soup = self.__get_page_and_parse(compose_url)
+        form = soup.find('form')
+        fields = self.__get_all_fields_in_form(form)
+        
+        # Plug in new content
+        fields['subject'] = subject
+        fields['message'] = message
+        submit_url = parse.urljoin(self.host_url, form.attrs['action'])
+        res = self.__post_page(submit_url, data=fields)
+
+        return res.url
+
 
     def post_thread(self, subject, message, forum_id=45, typeid=None):
         payload = {}

@@ -13,11 +13,11 @@ from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 
 from .models import Release
-from .amParser import Am
 from .forms import AplForm, PostForm, ReleaseForm
-from .np import Np
-from .baal import Baal
-from .tonos import Tonos
+from utils.amParser import Am
+from utils.np import Np
+from utils.baal import Baal
+from utils.tonos import Tonos
 
 # Create your views here.
 
@@ -104,6 +104,24 @@ def np_post_thread(request):
             return JsonResponse({"error": "error posting"}, status=400)
 
         return JsonResponse(post)
+
+    return HttpResponse('Bad Request', status=400)
+
+@csrf_exempt
+def np_edit_thread(request):
+    if request.method == 'POST':
+        content = json.loads(request.body)
+        auth = content.get('cdb_auth')
+        np = Np(cdb_auth=auth)
+        try:
+            post = np.edit_thread(content.get('post_url'),
+                        content.get('subject').encode('gbk', 'ignore'),
+                        content.get('message').encode('gbk', 'ignore'))
+        except Exception as err:
+            logger.warning(err)
+            return JsonResponse({"error": "error posting"}, status=400)
+
+        return JsonResponse({"error": 0, "url": post})
 
     return HttpResponse('Bad Request', status=400)
 

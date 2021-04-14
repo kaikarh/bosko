@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'generic',
     'dsca',
     'postmaker',
+    'minos',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
