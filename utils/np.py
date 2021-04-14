@@ -69,6 +69,11 @@ class Np:
                     continue
                 result[field.attrs['name']] = field.attrs['value']
                 logger.debug('{:<12} {:<20}'.format(field.attrs['name'], field.attrs['value']))
+        
+        typeid_select = form.find('select', {'name': 'typeid'})
+        if typeid_select:
+            selected = form.find('option', selected=True)
+            result['typeid'] = selected.attrs['value']
         return result
 
     def login(self, account):
