@@ -1,4 +1,4 @@
-from os import path
+from os import path, environ
 import json
 
 from django.http import HttpResponse, JsonResponse
