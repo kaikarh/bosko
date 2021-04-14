@@ -1,5 +1,5 @@
 from os import path, environ
-import json
+import json, logging
 
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
