@@ -41,7 +41,7 @@ def generate_album_from_a_id(tonos):
 
 @csrf_exempt
 def api_accept_release(request):
-    if request.method == 'POST': 
+    if request.method == 'POST':
         try:
             content = json.loads(request.body)
             release_name = content['name']
@@ -128,10 +128,10 @@ def api_accept_release(request):
         with open(style_file_path) as f:
             for line in f:
                 line = line.strip()
-                css += line        
+                css += line
         message = render_to_string('minos/rendered_thread.html',
                                 {'data': json.dumps(serialize_all_data()), 'css': css})
-        
+
         try:
             post = np.edit_thread(thread_url,
                         subject.encode('gbk', 'ignore'),
@@ -142,7 +142,7 @@ def api_accept_release(request):
 
         return JsonResponse({'error': 0, 'message': 'ok', 'url': post})
 
-    return HttpResponse('Bad Request', status=400) 
+    return HttpResponse('Bad Request', status=400)
 
 def render_thread(request):
     # Read style file for the post thread

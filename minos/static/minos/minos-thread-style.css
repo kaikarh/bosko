@@ -55,6 +55,10 @@
     justify-content: space-around;
 }
 
+.gallery li {
+    margin: 1rem 2px;
+}
+
 .gallery li .hide {
     display: none;
 }
@@ -64,7 +68,6 @@
     display: block;
     width: 350px;
     height: 350px;
-    margin: 1rem 2px;
 }
 
 .album-image {
