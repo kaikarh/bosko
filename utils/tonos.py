@@ -137,7 +137,10 @@ class Tonos:
             if 'FLAC' in rls_name:
                 # FLAC release, trim the '-***_Edition-' from the album name
                 title_words = parsed_rls['title'].split('-')
-                if len(title_words) > 1 and 'Edition'.upper() in title_words[-1].upper():
+                if len(title_words) > 1 and (
+                        'edition'.upper() in title_words[-1].upper() or \
+                        'retail'.upper() in title_words[-1].upper() or \
+                        'reissue'.upper() in title_words[-1].upper()):
                     parsed_rls['title'] = ' '.join(title_words[:-1])
 
             query_term = '{} {}'.format(parsed_rls['artist'], parsed_rls['title'])
