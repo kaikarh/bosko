@@ -418,6 +418,12 @@ def auto_post(release, tonos):
         typeid = 66
         forum_id = 59
 
+    if data['parsed_rls'].get('lang') == 'CN':
+        forum_id = 56
+
+    if data['album_info']['genre'] in 'Soundtrack':
+        forum_id = 86
+
     np = Np(cdb_auth=environ.get('AUTOPOSTER'))
 
     # Try to post thread
