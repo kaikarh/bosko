@@ -18,6 +18,7 @@ from utils.amParser import Am
 from utils.np import Np
 from utils.baal import Baal
 from utils.tonos import Tonos
+from minos.views import add_to_db, update_flac_post
 
 # Create your views here.
 
@@ -324,10 +325,17 @@ def new_release_ping(request):
                         share_link_passcode=data.get('link_pwd', ''),
                         adam_id=(a_id if a_id else ''))
 
-            try:
-                auto_post(r, tonos)
-            except Exception as err:
-                logger.warning('Failed to auto post {}:\n - {}'.format(r.release_name, err))
+            if tonos.data['parsed_rls'].get('flac'):
+                try:
+                    add_to_db(tonos, link=r.share_link, link_pwd=r.share_link_passcode)
+                    update_flac_post(np=Np(cdb_auth=environ.get('AUTOPOSTER')), thread_url=environ.get('FLACTHREADURL'))
+                except Exception as err:
+                    logger.warning('Failed to post FLAC {}:\n - {}'.format(r.release_name, err))
+            else:
+                try:
+                    auto_post(r, tonos)
+                except Exception as err:
+                    logger.warning('Failed to auto post {}:\n - {}'.format(r.release_name, err))
 
             # Save to database
             try:
