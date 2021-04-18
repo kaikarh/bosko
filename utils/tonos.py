@@ -33,7 +33,7 @@ class Tonos:
         # group4 -> WEB
         # group5 -> FLAC
 
-        match = re.search('([\w\.\-]*?)\-{1,2}([\w\.\-\(\)]*?)(?:\-\([A-Z\-\_\d]{4,}\))?(?:\-((?:CN)|(?:KR)|(?:JP)))?(?:\-\(?(?:(?:P[Rr][Oo][Pp][Ee][Rr])|(?:R[Ee][Pp][Aa][Cc][Kk])|(?:D[Ii]RF[Ii]X))\)?)?(?:\-P[Rr][Oo][Mm][Oo])?(?:\-\(?(?:(WEB)|(?:\d?CD(?:(?:[MRS]?)|(?:EP))|(?:\d?DVD)|(?:EP)|(?:Vinyl)))\)?)?(?:\-\d{2}BIT)?(?:\-(?:WEB)?(FLAC))?(?:\-([A-Z]{2}))?\-(\d{4})\-(?:[\w\_]+)', rls_name)
+        match = re.search('([\w\.\-]*?)\-{1,2}([\w\.\-\(\)]*?)(?:\-\([A-Z\-\_\d]{4,}\))?(?:\-((?:CN)|(?:KR)|(?:JP)|(?:ES)))?(?:\-\(?(?:(?:P[Rr][Oo][Pp][Ee][Rr])|(?:R[Ee][Pp][Aa][Cc][Kk])|(?:D[Ii]RF[Ii]X))\)?)?(?:\-READNFO)?(?:\-P[Rr][Oo][Mm][Oo])?(?:\-[\w]*(?:(?:E[Dd][Ii][Tt][Ii][Oo][Nn])|(?:Retail)|(?:R[Ee][Ii][Ss][Ss][Uu][Ee])))?(?:\-\(?(?:(WEB)|(?:\d?CD(?:(?:[MRS]?)|(?:EP))|(?:\d?DVD)|(?:EP)|(?:V[Ii][Nn][Yy][Ll])))\)?)?(?:\-\d{2}BIT)?(?:\-(?:WEB)?(FLAC))?(?:\-([A-Z]{2}))?\-(\d{4})\-(?:\w+)', rls_name)
 
         if match:
             logger.debug('Regex match result {}'.format(match.groups()))
@@ -134,15 +134,6 @@ class Tonos:
         parsed_rls = self.parse_rls_name(rls_name)
         if parsed_rls:
             # if parsed a valid release name
-            if 'FLAC' in rls_name:
-                # FLAC release, trim the '-***_Edition-' from the album name
-                title_words = parsed_rls['title'].split('-')
-                if len(title_words) > 1 and (
-                        'edition'.upper() in title_words[-1].upper() or \
-                        'retail'.upper() in title_words[-1].upper() or \
-                        'reissue'.upper() in title_words[-1].upper()):
-                    parsed_rls['title'] = ' '.join(title_words[:-1])
-
             query_term = '{} {}'.format(parsed_rls['artist'], parsed_rls['title'])
         else:
             # cant even parse the release name
