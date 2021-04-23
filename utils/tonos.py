@@ -32,7 +32,7 @@ class Tonos:
         # group4 -> WEB
         # group5 -> FLAC
 
-        match = re.search('([\w\.\-]*?)\-{1,2}([\w\.\-\(\)]*?)(?:\-\([A-Z\-\_\d]{4,}\))?(?:\-((?:CN)|(?:KR)|(?:JP)|(?:ES)))?(?:\-\(?(?:(?:P[Rr][Oo][Pp][Ee][Rr])|(?:R[Ee][Pp][Aa][Cc][Kk])|(?:D[Ii]RF[Ii]X))\)?)?(?:\-READNFO)?(?:\-P[Rr][Oo][Mm][Oo])?(?:\-[\w]*(?:(?:E[Dd][Ii][Tt][Ii][Oo][Nn])|(?:Retail)|(?:R[Ee][Ii][Ss][Ss][Uu][Ee])))?(?:\-\(?(?:(WEB)|(?:\d?CD(?:(?:[MRS]?)|(?:EP))|(?:\d?DVD)|(?:EP)|(?:V[Ii][Nn][Yy][Ll])))\)?)?(?:\-\d{2}BIT)?(?:\-(?:WEB)?(FLAC))?(?:\-([A-Z]{2}))?\-(\d{4})\-(?:\w+)', rls_name)
+        match = re.search('([\w\.\-]*?)\-{1,2}([\w\.\-\(\)]*?)(?:\-\([A-Z\-\_\d]{4,}\))?(?:\-((?:CN)|(?:KR)|(?:JP)|(?:ES)))?(?:\-\(?(?:(?:P[Rr][Oo][Pp][Ee][Rr])|(?:R[Ee][Pp][Aa][Cc][Kk])|(?:D[Ii]RF[Ii]X))\)?)?(?:\-READNFO)?(?:\-P[Rr][Oo][Mm][Oo])?(?:\-[\w]*(?:(?:E[Dd][Ii][Tt][Ii][Oo][Nn])|(?:Retail)|(?:R[Ee][Ii][Ss][Ss][Uu][Ee])|(?:R[Ee][Mm][Aa][Ss][Tt][Ee][Rr][Ee][Dd])))?(?:\-\(?(?:(WEB)|(?:\d?CD(?:(?:[MRS]?)|(?:EP))|(?:\d?DVD)|(?:EP)|(?:V[Ii][Nn][Yy][Ll])))\)?)?(?:\-\d{2}BIT)?(?:\-(?:WEB)?(FLAC))?(?:\-([A-Z]{2}))?\-(\d{4})\-(?:\w+)', rls_name)
 
         if match:
             logger.debug('Regex match result {}'.format(match.groups()))
