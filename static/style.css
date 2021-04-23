@@ -29,6 +29,14 @@ body {
   padding-top: 40px;
 }
 
+.signin {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  flex-flow: column;
+}
+
 .chart-container {
   position: relative;
   height: 350px;

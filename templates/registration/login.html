@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+
+{% block title %}Login | {{block.super}}{% endblock %}
+{% block content %}
+    <div class="signin">
+            {% if form.errors %}
+            <div class="alert alert-warning" role="alert">
+                Your username and password didn't match. Please try again.
+            </div>
+            {% endif %}
+            
+            {% if next %}
+                {% if user.is_authenticated %}
+                <div class="alert alert-warning" role="alert">
+                    Your account doesn't have access to this page. To proceed,
+                    please login with an account that has access.
+                </div>
+                {% endif %}
+            {% endif %}
+
+        <form method="post" action="{% url 'login' %}">
+            <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+            {% csrf_token %}
+            
+            <table>
+            <tr>
+                <td>{{ form.username.label_tag }}</td>
+                <td>{{ form.username }}</td>
+            </tr>
+            <tr>
+                <td>{{ form.password.label_tag }}</td>
+                <td>{{ form.password }}</td>
+            </tr>
+            </table>
+            <div class="d-flex w-100 justify-content-end">
+                <button class="btn btn-primary" type="submit">Login</button>
+            </div>
+            <input type="hidden" name="next" value="{{ next }}">
+        </form>
+        
+        {# Assumes you setup the password_reset view in your URLconf #}
+        {# <div><a href="{% url 'password_reset' %}">Lost password?</a></div> #}
+        
+    </div>
+{% endblock %}

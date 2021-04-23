@@ -18,6 +18,7 @@ from django.urls import include, path
 
 urlpatterns = [
     path('', include('generic.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),
     path('dsca/', include('dsca.urls')),
     path('minos/', include('minos.urls')),
     path('postmaker/', include('postmaker.urls')),

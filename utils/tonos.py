@@ -13,15 +13,14 @@ logging.basicConfig(level=logging.DEBUG,
 logger = logging.getLogger(__name__)
 
 class Tonos:
-    def __init__(self, rls_name=None):
+    def __init__(self, rls_name=None, a_id=None):
         self.data = {}
         if rls_name:
             self.data['release_name'] = rls_name
             self.data['parsed_rls'] = self.parse_rls_name(rls_name)
-            self.data['a_id'] = self.get_adam_id(rls_name)
+            self.data['a_id'] = a_id if a_id else self.get_adam_id(rls_name)
             if self.data['a_id']:
-                id_result = self._query_apple(a_id=self.data['a_id'])
-                self.data['album_info'] = self._extract_id_query_result(id_result)
+                self.data['album_info'] = self.lookup_album_id(self.data['a_id'])
 
     def get_data(self):
         return self.data
