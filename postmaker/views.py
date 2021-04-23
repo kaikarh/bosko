@@ -11,6 +11,7 @@ from django.views.generic import ListView
 from django.views.generic import DetailView
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Release
 from .forms import AplForm, PostForm, ReleaseForm
@@ -132,7 +133,7 @@ class ReleaseList(ListView):
     template_name = 'postmaker/releases.html'
     queryset = Release.objects.order_by('-time')
 
-class ReleaseDetailView(DetailView):
+class ReleaseDetailView(LoginRequiredMixin, DetailView):
     model = Release
     template_name = 'postmaker/release-detail.html'
     def get_context_data(self, **kwargs):
@@ -142,7 +143,7 @@ class ReleaseDetailView(DetailView):
         context['form'] = form
         return context
 
-class ReleaseDetailMakeView(DetailView):
+class ReleaseDetailMakeView(LoginRequiredMixin, DetailView):
     model = Release
     template_name = 'postmaker/release-detail-make.html'
     def get_context_data(self, **kwargs):

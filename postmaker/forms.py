@@ -43,8 +43,8 @@ class PostForm(forms.Form):
         super(PostForm, self).__init__(*args, **kwargs)
 
         datalist = {
-            'rip_info_options': ['web / scene / mp3',
-                                 'CD / scene / mp3',
+            'rip_info_options': ['web / scene / mp3 320K',
+                                 'CD / scene / mp3 v0',
                                  'CD / scene / flac',
                                  'vinyl / scene / flac',
                                  'tape / scene / mp3'],
