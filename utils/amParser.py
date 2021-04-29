@@ -34,7 +34,7 @@ class Am:
             info['meta'] = info['meta'].split("\u2004·\u2004")
 
             info['tracklist'] = []
-            song_list = self.soup.select('.songs-list .row.track .col.col-song .song-name')
+            song_list = self.soup.select('.songs-list .songs-list-row__song-name')
 
             for i in song_list:
                 info['tracklist'].append(i.get_text(strip=True))
