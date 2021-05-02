@@ -1,4 +1,4 @@
-import json, re, logging
+import json, re, logging, threading
 
 from os import path, environ
 from datetime import datetime
@@ -306,47 +306,57 @@ def get_share_link(request):
 
     return JsonResponse({'error': 1, 'message': 'Unsupported method'}, status=400)
 
+def process_new_release(data):
+    # Check validity
+    if data.get('release_name') and \
+            data.get('archive_name'):
+        tonos = Tonos(data['release_name'])
+        album = tonos.get_data()
+        a_id = album.get('a_id')
+        r = Release(release_name=data['release_name'],
+                    archive_name=data['archive_name'],
+                    archive_size=data.get('archive_size', 0),
+                    stream_song_name=data.get('strm_name', ''),
+                    stream_song_url=data.get('strm_url', ''),
+                    share_link=data.get('link', ''),
+                    share_link_passcode=data.get('link_pwd', ''),
+                    adam_id=(a_id if a_id else ''))
+
+        if tonos.data['parsed_rls'].get('flac'):
+            try:
+                add_to_db(tonos, link=r.share_link, link_pwd=r.share_link_passcode)
+                update_flac_post(np=Np(cdb_auth=environ.get('AUTOPOSTER')), thread_url=environ.get('FLACTHREADURL'))
+            except Exception as err:
+                logger.warning('Failed to post FLAC {}:\n - {}'.format(r.release_name, err))
+        else:
+            try:
+                auto_post(r, tonos)
+            except Exception as err:
+                logger.warning('Failed to auto post {}:\n - {}'.format(r.release_name, err))
+
+        # Save to database
+        try:
+            r.full_clean()
+            r.save()
+        except (ValidationError, IntegrityError) as error:
+            logger.info('Invalid record: {}'.format(error))
+        except:
+            logger.info('Write to database failed')
+
 @csrf_exempt
 def new_release_ping(request):
     # JSON api for getting ping of new release
     if request.method == 'POST':
         data = json.loads(request.body)
-        # Check validity
-        if data.get('release_name') and \
-                data.get('archive_name'):
-            tonos = Tonos(data['release_name'])
-            album = tonos.get_data()
-            a_id = album.get('a_id')
-            r = Release(release_name=data['release_name'],
-                        archive_name=data['archive_name'],
-                        archive_size=data.get('archive_size', 0),
-                        stream_song_name=data.get('strm_name', ''),
-                        stream_song_url=data.get('strm_url', ''),
-                        share_link=data.get('link', ''),
-                        share_link_passcode=data.get('link_pwd', ''),
-                        adam_id=(a_id if a_id else ''))
-
-            if tonos.data['parsed_rls'].get('flac'):
-                try:
-                    add_to_db(tonos, link=r.share_link, link_pwd=r.share_link_passcode)
-                    update_flac_post(np=Np(cdb_auth=environ.get('AUTOPOSTER')), thread_url=environ.get('FLACTHREADURL'))
-                except Exception as err:
-                    logger.warning('Failed to post FLAC {}:\n - {}'.format(r.release_name, err))
-            else:
-                try:
-                    auto_post(r, tonos)
-                except Exception as err:
-                    logger.warning('Failed to auto post {}:\n - {}'.format(r.release_name, err))
-
-            # Save to database
-            try:
-                r.full_clean()
-                r.save()
-            except (ValidationError, IntegrityError) as error:
-                logger.info('Invalid record: {}'.format(error))
-            except:
-                logger.info('Write to database failed')
-
+        try:
+            t = threading.Thread(target=process_new_release,
+                                 args=[data])
+            t.setDaemon(True)
+            t.start()
+        except Exception as err:
+            logger.warning('Spawning release process failed: {}'.format(err))
+            return JsonResponse({'error': 1, 'message': 'Spawning process: {}'.format(err)},
+                                status=400)
         return JsonResponse({'error': 0})
 
     return JsonResponse({'error': 1, 'message': 'Unsupported method'}, status=400)

@@ -20,9 +20,15 @@
     <div class="card-body">
       <h3 class="card-title">{{ release }}</h3>
       <p class="card-text"></p>
-      <a href="{% url 'postmaker:release_detail_make' release.pk %}" class="btn btn-primary">
-        Go make a forum post
-      </a>
+      <div class="btn-arr d-flex flex-row justify-content-around">
+        <a href="{% url 'postmaker:release_detail_make' release.pk %}" class="btn btn-primary">
+          Go make a forum post
+        </a>
+        <div class="input-group" style="max-width: 250px;">
+          <input class="form-control" id="adamIDInput" type="text">
+          <button type="button" class="btn btn-outline-secondary" id="adamIDPostBtn">Post As ID</button>
+        </div>
+      </div>
     </div>
     <div class="card-footer text-muted">
       {{ release.time|timesince }}
