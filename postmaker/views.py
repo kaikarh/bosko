@@ -440,10 +440,10 @@ def auto_post(release, tonos):
     if data['parsed_rls'].get('lang') == 'CN':
         forum_id = 56
 
-    if data['album_info']['genre'] in 'Soundtrack':
+    if 'Soundtrack' in data['album_info']['genre']:
         forum_id = 86
 
-    if data['album_info']['genre'] in 'Classical':
+    if 'Classical' in data['album_info']['genre']:
         forum_id = 34
 
     np = Np(cdb_auth=environ.get('AUTOPOSTER'))
