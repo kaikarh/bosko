@@ -48,19 +48,25 @@ class Tonos:
         return False
 
     def _query_apple(self, query=None, a_id=None, country='US'):
-        if query:
-            payload = {'term': query, 'media': 'music', 'entity': 'album', 'limit': 1, 'country': country}
-            r = requests.get('https://itunes.apple.com/search', params=payload).json()
-            logger.debug(json.dumps(r, indent=2))
-            return r
+        for attempt in range(3):
+            try:
+                if query:
+                    payload = {'term': query, 'media': 'music', 'entity': 'album', 'limit': 1, 'country': country}
+                    r = requests.get('https://itunes.apple.com/search', params=payload).json()
+                    logger.debug(json.dumps(r, indent=2))
+                    return r
 
-        if a_id:
-            payload = {'id': a_id, 'entity': 'song'}
-            r = requests.get('https://itunes.apple.com/lookup', params=payload).json()
-            logger.debug(json.dumps(r, indent=2))
-            return r
-
-        return False
+                if a_id:
+                    payload = {'id': a_id, 'entity': 'song'}
+                    r = requests.get('https://itunes.apple.com/lookup', params=payload).json()
+                    logger.debug(json.dumps(r, indent=2))
+                    return r
+            except Exception as err:
+                logger.info(err)
+                logger.warning('Query apple failed attempt {}/3'.format(attempt+1))
+            else:
+                break
+        return {}
 
     def _normalize_accented(self, s):
         return unicodedata.normalize('NFKD', s).encode('ASCII', 'ignore').decode()
