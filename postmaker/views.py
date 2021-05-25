@@ -322,17 +322,20 @@ def process_new_release(data):
                     share_link_passcode=data.get('link_pwd', ''),
                     adam_id=(a_id if a_id else ''))
 
-        if tonos.data['parsed_rls'].get('flac'):
-            try:
-                add_to_db(tonos, link=r.share_link, link_pwd=r.share_link_passcode)
-                update_flac_post(np=Np(cdb_auth=environ.get('AUTOPOSTER')), thread_url=environ.get('FLACTHREADURL'))
-            except Exception as err:
-                logger.warning('Failed to post FLAC {}:\n - {}'.format(r.release_name, err))
-        else:
-            try:
-                auto_post(r, tonos)
-            except Exception as err:
-                logger.warning('Failed to auto post {}:\n - {}'.format(r.release_name, err))
+        try:
+            if tonos.data['parsed_rls'].get('flac'):
+                try:
+                    add_to_db(tonos, link=r.share_link, link_pwd=r.share_link_passcode)
+                    update_flac_post(np=Np(cdb_auth=environ.get('AUTOPOSTER')), thread_url=environ.get('FLACTHREADURL'))
+                except Exception as err:
+                    logger.warning('Failed to post FLAC {}:\n - {}'.format(r.release_name, err))
+            else:
+                try:
+                    auto_post(r, tonos)
+                except Exception as err:
+                    logger.warning('Failed to auto post {}:\n - {}'.format(r.release_name, err))
+        except AttributeError:
+            logger.warning('Failed to parse release name')
 
         # Save to database
         try:
