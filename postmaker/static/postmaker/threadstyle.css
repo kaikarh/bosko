@@ -178,12 +178,12 @@
 }
 
 .hidden-info-wrapper {
-    padding-top: 5px;
+    padding-top: 2px;
 }
 
 .hidden-info-content {
     font-weight: 500;
-    color: rgba(0, 0, 0, 0.7);
+    color: rgba(0, 0, 0, 0.6);
 }
 
 .download-info {

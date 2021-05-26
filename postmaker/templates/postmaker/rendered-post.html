@@ -74,7 +74,7 @@
           </div>
           {% if album.hidden_info %}
           <div class="hidden-info-wrapper">
-            [hide]
+            [hide=1]
             <div class="hidden-info-content">
               {% if album.archive_name %}
                 密码：needpop.com
@@ -134,6 +134,41 @@
 
 <script>document.styleSheets[0].cssRules[111].style.removeProperty('overflow');</script>
 <script>
+  function injectCss(css) {
+    var head = document.head || document.getElementsByTagName('head')[0];
+    var style = document.createElement('style');
+
+    head.appendChild(style);
+
+    style.type = 'text/css';
+    if (style.styleSheet) {
+      // This is required for IE8 and below.
+      style.styleSheet.cssText = css;
+    } else {
+      style.appendChild(document.createTextNode(css));
+    }
+  }
+
+  function restyleForumHiddenContent(elemSet) {
+    function removeChildrenBr(elem) {
+      let brs = elem.getElementsByTagName('br');
+      while (brs.length) {
+        elem.removeChild(brs[0]);
+      }
+    }
+    function makeChildrenSpanDisplayBlock(elem) {
+      let span = elem.getElementsByTagName('span');
+      for (let counter=0; counter<span.length; counter++) {
+        span[counter].style.display = 'block';
+      }
+    }
+
+    for (let counter=0; counter<elemSet.length; counter++) {
+      removeChildrenBr(elemSet[counter]);
+      makeChildrenSpanDisplayBlock(elemSet[counter]);
+    }
+  }
+
   var dlModal = document.getElementById("downloadModal");
   document.getElementById("download-button").onclick = function () {
     // let x = document.getElementById("link-wrapper");
@@ -153,21 +188,7 @@
     }
   }
 
-  function injectCss(css) {
-    var head = document.head || document.getElementsByTagName('head')[0];
-    var style = document.createElement('style');
-
-    head.appendChild(style);
-
-    style.type = 'text/css';
-    if (style.styleSheet) {
-      // This is required for IE8 and below.
-      style.styleSheet.cssText = css;
-    } else {
-      style.appendChild(document.createTextNode(css));
-    }
-  }
-
   injectCss("{{ css }}");
+  restyleForumHiddenContent(document.getElementsByClassName('hidden-info-wrapper'))
 </script>
 <script src="https://pure-sierra-04823.herokuapp.com/static/dsca/dsca-link.js" async></script>
