@@ -81,6 +81,8 @@
       .then((content) => {
         if (content["error"]) {
           document.getElementsByClassName("card-header")[0].textContent = content["error"];
+        } else {
+          document.getElementsByClassName("card-header")[0].textContent = "Release - Posted ✅";
         }
       });
   }
