@@ -25,6 +25,8 @@
           Go make a forum post
         </a>
         <div class="input-group" style="max-width: 250px;">
+          {% csrf_token %}
+          <input type="hidden" id="pk" name="pk" value="{{ release.pk }}">
           <input class="form-control" id="adamIDInput" type="text">
           <button type="button" class="btn btn-outline-secondary" id="adamIDPostBtn">Post As ID</button>
         </div>
@@ -36,7 +38,7 @@
   </div>
   <div>
     <a href="">
-      
+
     </a>
   </div>
   <div class="form mt-5 pb-3">
@@ -56,4 +58,31 @@
     </form>
   </div>
 </div>
+<script>
+  document.getElementById("adamIDPostBtn").onclick = () => {
+    let api_url = "/postmaker/api/post-with-id";
+    let pk = document.getElementById("pk").value;
+    let a_id = document.getElementById("adamIDInput").value;
+    let token = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    let data = {
+      'pk': pk,
+      'a_id': a_id
+    };
+
+    fetch(api_url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': token
+      },
+      body: JSON.stringify(data)
+    })
+      .then(response => response.json())
+      .then((content) => {
+        if (content["error"]) {
+          document.getElementsByClassName("card-header")[0].textContent = content["error"];
+        }
+      });
+  }
+</script>
 {% endblock %}

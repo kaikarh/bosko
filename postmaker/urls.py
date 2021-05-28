@@ -12,6 +12,7 @@ urlpatterns = [
     path('releases/<int:pk>/make', views.ReleaseDetailMakeView.as_view(), name='release_detail_make'),
     path('api/set-posted', views.set_posted, name='set_posted'),
     path('api/am', views.fetch_am, name='fetch_am'),
+    path('api/post-with-id', views.post_to_forum_with_id, name='post_with_id'),
     path('api/np/login', views.np_login, name='np_login'),
     path('api/np/get-user', views.np_get_user, name='np_get_user'),
     path('api/np/post', views.np_post_thread, name='np_post_thread'),

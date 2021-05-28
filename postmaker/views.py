@@ -127,6 +127,23 @@ def np_edit_thread(request):
 
     return HttpResponse('Bad Request', status=400)
 
+def post_to_forum_with_id(request):
+    if request.method == 'POST':
+        try:
+            content = json.loads(request.body)
+            pk = content['pk']
+            a_id = content['a_id']
+            release = Release.objects.get(pk=pk)
+            auto_post(release, a_id=a_id, forced=True)
+
+        except Exception as err:
+            logger.warning(err)
+            return JsonResponse({"error": "error posting"}, status=400)
+
+        return JsonResponse({"error": 0})
+
+    return HttpResponse('Bad Request', status=400)    
+
 class ReleaseList(ListView):
     #model = Release
     context_object_name = 'release_list'
@@ -310,32 +327,13 @@ def process_new_release(data):
     # Check validity
     if data.get('release_name') and \
             data.get('archive_name'):
-        tonos = Tonos(data['release_name'])
-        album = tonos.get_data()
-        a_id = album.get('a_id')
         r = Release(release_name=data['release_name'],
                     archive_name=data['archive_name'],
                     archive_size=data.get('archive_size', 0),
                     stream_song_name=data.get('strm_name', ''),
                     stream_song_url=data.get('strm_url', ''),
                     share_link=data.get('link', ''),
-                    share_link_passcode=data.get('link_pwd', ''),
-                    adam_id=(a_id if a_id else ''))
-
-        try:
-            if tonos.data['parsed_rls'].get('flac'):
-                try:
-                    add_to_db(tonos, link=r.share_link, link_pwd=r.share_link_passcode)
-                    update_flac_post(np=Np(cdb_auth=environ.get('AUTOPOSTER')), thread_url=environ.get('FLACTHREADURL'))
-                except Exception as err:
-                    logger.warning('Failed to post FLAC {}:\n - {}'.format(r.release_name, err))
-            else:
-                try:
-                    auto_post(r, tonos)
-                except Exception as err:
-                    logger.warning('Failed to auto post {}:\n - {}'.format(r.release_name, err))
-        except AttributeError:
-            logger.warning('Failed to parse release name')
+                    share_link_passcode=data.get('link_pwd', ''))
 
         # Save to database
         try:
@@ -345,6 +343,11 @@ def process_new_release(data):
             logger.info('Invalid record: {}'.format(error))
         except:
             logger.info('Write to database failed')
+
+        try:
+            auto_post(r)
+        except Exception as err:
+            logger.warning('Auto post error: {}'.format(err))
 
 @csrf_exempt
 def new_release_ping(request):
@@ -364,20 +367,66 @@ def new_release_ping(request):
 
     return JsonResponse({'error': 1, 'message': 'Unsupported method'}, status=400)
 
-def auto_post(release, tonos):
+def auto_post(release, a_id=None, forced=False):
+    tonos = Tonos(release.release_name, a_id)
+    release.adam_id = tonos.data.get('a_id', '')
+
+    try:
+        if tonos.data['parsed_rls'].get('flac'):
+            try:
+                add_to_db(tonos, link=release.share_link, link_pwd=release.share_link_passcode)
+                update_flac_post(np=Np(cdb_auth=environ.get('AUTOPOSTER')), thread_url=environ.get('FLACTHREADURL'))
+            except Exception as err:
+                logger.warning('Failed to post FLAC {}:\n - {}'.format(release.release_name, err))
+            finally:
+                return None
+    except AttributeError:
+        logger.warning('Failed to parse release name')
+
     # Check if got a hit on album api
     if not release.adam_id:
         raise Exception('Not found on Apple music')
     # Check duplicate
     dupe = chk_rls_dup(release)
-    if dupe:
-        logger.warning(f'Dupe: {dupe}')
-        raise Exception('Duplication')
-    if not chk_validity(tonos):
-        raise Exception('Search Result Validation Failed')
+    if not forced:
+        if dupe:
+            logger.warning(f'Dupe: {dupe}')
+            raise Exception('Duplication')
+        if not chk_validity(tonos):
+            raise Exception('Search Result Validation Failed')
 
     # All Clear!
     print('Release {} clear for autopost!'.format({release.release_name}))
+
+    post_meta = compose_post(release, tonos)
+    np = Np(cdb_auth=environ.get('AUTOPOSTER'))
+    post_url = post_to_forum(post_meta['thread_subject'], post_meta['rendered_post'],
+                post_meta['forum_id'], post_meta['typeid'], np)
+
+    if post_url:
+        release.post_url = post_url
+        release.posted = True
+        release.full_clean()
+        release.save()
+
+def post_to_forum(subject, body, forum_id, typeid, np):
+    # Try to post thread
+    # retry if failed
+    for attempt in range(3):
+        try:
+            post = np.post_thread(subject.encode('gbk', 'ignore'),
+                        body.encode('gbk', 'ignore'),
+                        forum_id=forum_id,
+                        typeid=typeid)
+            return post.get('url', '')
+        except Exception as err:
+            logger.info(err)
+            logger.warning('Post Failed attempt {}/3'.format(attempt+1))
+    else:
+        logger.warning('All post attempt failed')
+        raise Exception('All post attempt failed')
+
+def compose_post(release, tonos):
     # Compose the post
     # Read style file for the post thread
     style_file_path = path.join(path.dirname(path.realpath(__file__)),
@@ -449,30 +498,12 @@ def auto_post(release, tonos):
     if 'Classical' in data['album_info']['genre']:
         forum_id = 34
 
-    np = Np(cdb_auth=environ.get('AUTOPOSTER'))
-
-    # Try to post thread
-    # retry if failed
-    for attempt in range(3):
-        try:
-            post = np.post_thread(thread_subject.encode('gbk', 'ignore'),
-                        rendered_post.encode('gbk', 'ignore'),
-                        forum_id=forum_id,
-                        typeid=typeid)
-
-            release.post_url = post.get('url', '')
-            release.posted = True
-        except Exception as err:
-            logger.info(err)
-            logger.warning('Post Failed attempt {}/3'.format(attempt+1))
-        else:
-            break
-    else:
-        logger.warning('All post attempt failed')
-        raise Exception('All post attempt failed')
-
-def compose_post(release):
-    pass
+    return {
+        'rendered_post': rendered_post,
+        'thread_subject': thread_subject,
+        'typeid': typeid,
+        'forum_id': forum_id
+    }
 
 def chk_validity(tonos):
     return tonos.check_validity()

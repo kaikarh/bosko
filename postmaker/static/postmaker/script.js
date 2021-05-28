@@ -1,9 +1,9 @@
 document.getElementById("id_apple_music_url-btn").onclick = () => {
-  api_url = "/postmaker/api/am";
-  amurl = document.getElementById("id_apple_music_url").value;
-  data = {
+  let api_url = "/postmaker/api/am";
+  let amurl = document.getElementById("id_apple_music_url").value;
+  let data = {
     'amurl': amurl
-  }
+  };
 
   csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
