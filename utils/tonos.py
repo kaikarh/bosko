@@ -57,7 +57,7 @@ class Tonos:
                     return r
 
                 if a_id:
-                    payload = {'id': a_id, 'entity': 'song'}
+                    payload = {'id': a_id, 'entity': 'song', 'country': country}
                     r = requests.get('https://itunes.apple.com/lookup', params=payload).json()
                     logger.debug(json.dumps(r, indent=2))
                     return r
@@ -100,8 +100,12 @@ class Tonos:
                     song['name'] = record['trackName']
                     song['trackNumber'] = record['trackNumber']
                     song['duration'] = record['trackTimeMillis']
-                    #if record['isStreamable']:
-                    #    song['previewUrl'] = record['previewUrl']
+                    # iTunes api may or may not provide streamable preview
+                    try:
+                        song['previewUrl'] = record['previewUrl']
+                    except KeyError:
+                        # No preview url available
+                        pass
 
                     data['tracks'].append(song)
 
@@ -162,9 +166,28 @@ class Tonos:
             return result['results'][0]['collectionId']
         return None
 
-    def lookup_album_id(self, a_id):
-        id_result = self._query_apple(a_id=a_id)
-        return self._extract_id_query_result(id_result)
+    def lookup_album_id(self, a_id, country='US', fallback=True):
+        id_result = self._query_apple(a_id=a_id, country=country)
+        result_dict = self._extract_id_query_result(id_result)
+
+        if fallback:
+            # Query fallback country iTunes stores if tracklist result is empty
+            if len(result_dict['tracks']) == 0:
+                if isinstance(fallback, tuple):
+                    # Max 3 fallback queries
+                    fallback = fallback[:3]
+                else:
+                    # no fallback country specified. Use default
+                    fallback = ('GB', 'DE', 'JP')
+
+                for _ in fallback:
+                    fallback_query_result = self._query_apple(a_id=a_id, country=_)
+                    fallback_result_dict = self._extract_id_query_result(fallback_query_result)
+                    if len(fallback_result_dict['tracks']) > 0:
+                        result_dict['tracks'] = fallback_result_dict['tracks'][:]
+                        break
+
+        return result_dict
 
     def go(self, rls_name):
         a_id = self.get_adam_id(rls_name)
