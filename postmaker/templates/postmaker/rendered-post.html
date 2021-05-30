@@ -93,15 +93,13 @@
     <div class="download-info">
       {% if album.stream_url %}
         <div class="streaming">
-          <figure>
-            <audio
-                controls preload=auto
-                src="{{ album.stream_url }}">
-                    瀏覽器不支援
-                    <code>audio</code> element
-                    ，請更新到新版本的Chrome或Firefox。
-            </audio>
-          </figure>      
+          <audio
+              controls preload=auto
+              src="{{ album.stream_url }}">
+                  瀏覽器不支援
+                  <code>audio</code> element
+                  ，請更新到新版本的Chrome或Firefox。
+          </audio>
         </div>
       {% endif %}      
       <div class="button-content">
