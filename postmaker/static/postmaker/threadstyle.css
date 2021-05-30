@@ -307,14 +307,6 @@
     border-top: 1px solid #dee2e6;
 }
 
-.streaming figure {
-    width: 100%;
-}
-
-.streaming audio {
-    width: 100%;
-}
-
 .download-info .button-content {
     margin-top: 2rem;
 }
@@ -332,14 +324,6 @@
         align-items: flex-start;
         max-width: 1400px;
         margin: auto;
-    }
-
-    .streaming {
-        margin-top: 1rem;
-    }
-
-    .streaming figure {
-        width: 300px;
     }
 
     .download-info {
