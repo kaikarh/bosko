@@ -307,8 +307,12 @@
     border-top: 1px solid #dee2e6;
 }
 
+.streaming figure {
+    width: 100%;
+}
+
 .streaming audio {
-    height: 3.5rem;
+    width: 100%;
 }
 
 .download-info .button-content {
@@ -332,6 +336,10 @@
 
     .streaming {
         margin-top: 1rem;
+    }
+
+    .streaming figure {
+        width: 300px;
     }
 
     .download-info {
