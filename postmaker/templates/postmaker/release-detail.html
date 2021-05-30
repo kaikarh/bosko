@@ -59,7 +59,10 @@
   </div>
 </div>
 <script>
-  document.getElementById("adamIDPostBtn").onclick = () => {
+  var postButton = document.getElementById("adamIDPostBtn");
+  var infoBox = document.getElementsByClassName("card-header")[0];
+
+  postButton.onclick = () => {
     let api_url = "/postmaker/api/post-with-id";
     let pk = document.getElementById("pk").value;
     let a_id = document.getElementById("adamIDInput").value;
@@ -69,6 +72,12 @@
       'a_id': a_id
     };
 
+    let spinner = document.createElement("span");
+        infoBox.textContent = "...";
+        spinner.classList.add("spinner-border", "spinner-border-sm");
+        postButton.textContent = "";
+        postButton.appendChild(spinner);
+
     fetch(api_url, {
       method: 'POST',
       headers: {
@@ -77,12 +86,17 @@
       },
       body: JSON.stringify(data)
     })
-      .then(response => response.json())
+      .then(response => {
+        postButton.removeChild(postButton.firstChild);
+        postButton.textContent = "Post As ID";
+
+        return response.json();
+      })
       .then((content) => {
         if (content["error"]) {
-          document.getElementsByClassName("card-header")[0].textContent = content["error"];
+          infoBox.textContent = content["error"];
         } else {
-          document.getElementsByClassName("card-header")[0].textContent = "Release - Posted ✅";
+          infoBox.textContent = "Release - Posted ✅";
         }
       });
   }
