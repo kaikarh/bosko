@@ -33,7 +33,7 @@
     flex-direction: column;
     margin-left: 20px;
     margin-right: 20px;
-    padding: 0 50px;
+    padding: 0 0 0 50px;
 }
 
 .album-info {
@@ -42,7 +42,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-width: 50vw;
+    flex: 2 0;
 }
 
 .album-lockup {
@@ -158,6 +158,10 @@
     vertical-align: middle;
 }
 
+.tracklist-col.song-index {
+    width: 2rem;
+}
+
 .tracklist .song-title {
     overflow: unset;
     color: rgba(0, 0, 0, 0.8);
@@ -189,11 +193,9 @@
 .download-info {
     padding-top: 20px;
     padding-bottom: 15px;
-    width: 100%;
-    min-width: 170px;
-    max-width: 480px;
     display: flex;
     flex-flow: column;
+    flex: 0 0;
 }
 
 .download-button {
@@ -305,8 +307,12 @@
     border-top: 1px solid #dee2e6;
 }
 
-.streaming {
-    margin-bottom: 2rem;
+.streaming audio {
+    height: 3.5rem;
+}
+
+.download-info .button-content {
+    margin-top: 2rem;
 }
 
 @media only screen and (min-width: 576px) {
@@ -316,11 +322,11 @@
     }
 }
 
-@media only screen and (min-width: 1000px) {
+@media only screen and (min-width: 1200px) {
     .thread-inner {
         flex-direction: row;
         align-items: flex-start;
-        max-width: 1200px;
+        max-width: 1400px;
         margin: auto;
     }
 
@@ -330,11 +336,8 @@
 
     .download-info {
         position: sticky;
-        width: 45%;
-        min-width: 300px;
         top: 0;
         padding-top: 40px;
-        padding-left: 20px;
         align-items: center;
     }
 }
