@@ -498,7 +498,8 @@ def compose_post(release, tonos):
     if data['parsed_rls'].get('lang') == 'CN':
         forum_id = 56
 
-    if 'Soundtrack' in data['album_info']['genre']:
+    if 'Soundtrack' in data['album_info']['genre'] or \
+            'Original Score' in data['album_info']['genre']:
         forum_id = 86
 
     if 'Classical' in data['album_info']['genre']:
