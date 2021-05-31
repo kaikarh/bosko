@@ -171,18 +171,28 @@ class Tonos:
         result_dict = self._extract_id_query_result(id_result)
 
         if fallback:
-            # Query fallback country iTunes stores if tracklist result is empty
-            if len(result_dict['tracks']) == 0:
-                if isinstance(fallback, tuple):
-                    # Max 3 fallback queries
-                    fallback = fallback[:3]
-                else:
-                    # no fallback country specified. Use default
-                    fallback = ('GB', 'DE', 'JP')
+            if isinstance(fallback, tuple):
+                # Max 3 fallback queries
+                fallback = fallback[:3]
+            else:
+                # no fallback country specified. Use default
+                fallback = ('GB', 'DE', 'JP', 'HK')
 
-                for _ in fallback:
-                    fallback_query_result = self._query_apple(a_id=a_id, country=_)
-                    fallback_result_dict = self._extract_id_query_result(fallback_query_result)
+            for _ in fallback:
+                fallback_result_dict = ''
+                if not result_dict:
+                    fallback_result_dict = self._extract_id_query_result(
+                        self._query_apple(a_id=a_id, country=_))
+                    if fallback_result_dict:
+                        result_dict = fallback_result_dict
+                    else:
+                        continue
+
+                # Query fallback country iTunes stores if tracklist result is empty
+                if len(result_dict['tracks']) == 0:
+                    if not fallback_result_dict:
+                        fallback_result_dict = self._extract_id_query_result(
+                            self._query_apple(a_id=a_id, country=_))
                     if len(fallback_result_dict['tracks']) > 0:
                         result_dict['tracks'] = fallback_result_dict['tracks'][:]
                         break
