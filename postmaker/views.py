@@ -401,6 +401,7 @@ def auto_post(release, a_id=None, forced=False):
     print('Release {} clear for autopost!'.format({release.release_name}))
 
     post_meta = compose_post(release, tonos)
+    print(post_meta['rendered_post'])
     np = Np(cdb_auth=environ.get('AUTOPOSTER'))
     post_url = post_to_forum(post_meta['thread_subject'], post_meta['rendered_post'],
                 post_meta['forum_id'], post_meta['typeid'], np)

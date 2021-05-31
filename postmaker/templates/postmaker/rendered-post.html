@@ -128,16 +128,16 @@
   </div>
 </div>
 
-{{ album|json_script:"album-data" }}
+{{ album.tracks|json_script:"tracks-data" }}
 {{ css|json_script:"css-src" }}
 <script>document.styleSheets[0].cssRules[111].style.removeProperty('overflow');</script>
 <script>
-  const albumData = JSON.parse(document.getElementById('album-data').textContent);
+  const tracks = JSON.parse(document.getElementById('tracks-data').textContent);
   var tracksDiv = document.querySelectorAll('.track');
   var audioPlayer = document.getElementById('audio-player');
 
   tracksDiv.forEach(function (element, index) {
-    if (albumData.tracks[index].hasOwnProperty('previewUrl')) {
+    if (tracks[index].hasOwnProperty('previewUrl')) {
       element.classList.add('playable');
       element.addEventListener('click', handleTrackDivClick, false);
     }
@@ -161,7 +161,7 @@
     clicked.classList.remove('playable');
     clicked.classList.add('playing');
 
-    audioPlayer.src = albumData.tracks[index].previewUrl;
+    audioPlayer.src = tracks[index].previewUrl;
     audioPlayer.play();
   }
 
