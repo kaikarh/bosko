@@ -401,6 +401,10 @@ def auto_post(release, a_id=None, forced=False):
     print('Release {} clear for autopost!'.format({release.release_name}))
 
     post_meta = compose_post(release, tonos)
+    # subject word limit
+    if len(post_meta['thread_subject']) > Np.POST_TITLE_MAX:
+        post_meta['thread_subject'] = post_meta['thread_subject'][:Np.POST_TITLE_MAX-3] + '.' * 3
+
     np = Np(cdb_auth=environ.get('AUTOPOSTER'))
     post_url = post_to_forum(post_meta['thread_subject'], post_meta['rendered_post'],
                 post_meta['forum_id'], post_meta['typeid'], np)
