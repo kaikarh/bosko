@@ -9,6 +9,9 @@ from urllib import parse
 logger = logging.getLogger(__name__)
 
 class Np:
+
+    POST_TITLE_MAX = 80
+
     def __init__(self, cdb_auth=None):
         # setup the session connection
         self.host_url = 'http://needpop.com'
@@ -184,6 +187,9 @@ class Np:
         payload['message'] = message
         payload['typeid'] = typeid
 
+        # subject word limit
+        if len(payload['subject']) > Np.POST_TITLE_MAX:
+            payload['subject'] = payload['subject'][:Np.POST_TITLE_MAX-3] + '.' * 3
         # get formhash
         compose_url = self.compose_url_base.format(forum_id)
         compose_page = self.__get_page_and_parse(compose_url)
