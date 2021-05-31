@@ -41,8 +41,10 @@
 
 </div>
 
+{{ data|json_script:"data-elem" }}
 <script>
-    data = {% autoescape off %} {{ data }} {% endautoescape %};
+    data = JSON.parse(document.getElementById('data-elem').textContent);
+    //data = {% autoescape off %} {{ data }} {% endautoescape %};
     let g = document.getElementById("gallery");
     var dlModal = document.getElementById("downloadModal");
 

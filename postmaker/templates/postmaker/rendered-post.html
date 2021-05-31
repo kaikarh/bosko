@@ -36,15 +36,13 @@
             <div class="tracklist-col song-index">
               <span>{{ forloop.counter }}</span>
             </div>
-            {% if track.name %}
-              <div class="tracklist-col song-title">
-                <div>{{ track.name }}</div>
-              </div>
-            {% else %}
-              <div class="tracklist-col song-title">
-                <div>{{ track }}</div>
-              </div>
-            {% endif %}
+            <div class="tracklist-col song-title">
+              {% if track.name %}
+                <span>{{ track.name }}</span>
+              {% else %}
+                <span>{{ track }}</span>
+              {% endif %}
+            </div>
           </div>
           {% endfor %}
         </div>
@@ -94,10 +92,10 @@
       {% if album.stream_url %}
         <div class="streaming">
           <audio
-              controls preload=auto
+              controls preload=auto id="audio-player"
               src="{{ album.stream_url }}">
                   瀏覽器不支援
-                  <code>audio</code> element
+                  <span>audio</span> element
                   ，請更新到新版本的Chrome或Firefox。
           </audio>
         </div>
@@ -130,8 +128,43 @@
   </div>
 </div>
 
+{{ album|json_script:"album-data" }}
+{{ css|json_script:"css-src" }}
 <script>document.styleSheets[0].cssRules[111].style.removeProperty('overflow');</script>
 <script>
+  const albumData = JSON.parse(document.getElementById('album-data').textContent);
+  var tracksDiv = document.querySelectorAll('.track');
+  var audioPlayer = document.getElementById('audio-player');
+
+  tracksDiv.forEach(function (element, index) {
+    if (albumData.tracks[index].hasOwnProperty('previewUrl')) {
+      element.classList.add('playable');
+      element.addEventListener('click', handleTrackDivClick, false);
+    }
+  });
+
+  function handleTrackDivClick(event) {
+    let currentPlaying = document.querySelector('.track.playing');
+    let clicked = event.currentTarget;
+    let index = Array.prototype.indexOf.call(clicked.parentElement.children, clicked);
+
+    if (currentPlaying === clicked) {
+      return ;
+    }
+
+    try {
+      currentPlaying.classList.remove('playing');
+      currentPlaying.classList.add('playable');
+    } catch (error) {
+      // no track is playing
+    }
+    clicked.classList.remove('playable');
+    clicked.classList.add('playing');
+
+    audioPlayer.src = albumData.tracks[index].previewUrl;
+    audioPlayer.play();
+  }
+
   function injectCss(css) {
     var head = document.head || document.getElementsByTagName('head')[0];
     var style = document.createElement('style');
@@ -186,7 +219,7 @@
     }
   }
 
-  injectCss("{{ css }}");
+  injectCss(JSON.parse(document.getElementById('css-src').textContent));
   restyleForumHiddenContent(document.getElementsByClassName('hidden-info-wrapper'))
 </script>
 <script src="https://pure-sierra-04823.herokuapp.com/static/dsca/dsca-link.js" async></script>

@@ -97,6 +97,8 @@ def np_post_thread(request):
         auth = content.get('cdb_auth')
         np = Np(cdb_auth=auth)
         try:
+            # replace unicode specified character to html encode
+            content['message'] = content['message'].replace('•', '&#8226;')
             post = np.post_thread(content.get('subject').encode('gbk', 'ignore'),
                         content.get('message').encode('gbk', 'ignore'),
                         forum_id=content.get('forum_id'),

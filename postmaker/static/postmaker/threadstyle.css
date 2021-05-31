@@ -159,12 +159,36 @@
 }
 
 .tracklist-col.song-index {
-    width: 2rem;
+    width: 2.5rem;
+    padding-left: 5px;
 }
 
 .tracklist .song-title {
     overflow: unset;
     color: rgba(0, 0, 0, 0.8);
+}
+
+.tracklist .playable {
+    cursor: pointer;
+}
+
+.tracklist .playable:hover {
+    background-color: rgb(247, 247, 247);
+}
+
+.tracklist .playing {
+    font-weight: 600;
+    background-color: rgb(247, 247, 247);
+}
+
+.tracklist .playing > .song-title::before {
+    content: "";
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border: 8px solid transparent;
+    border-left: 12px solid #afafaf;
+    vertical-align: text-bottom;
 }
 
 .bottom-metadata {
