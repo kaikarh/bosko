@@ -50,20 +50,20 @@
     var dlModal = document.getElementById("downloadModal");
 
     function populateDownloadModal(modal, index) {
-        for (let i=0; i<data[index].release_set.length; i++) {
+        for (let x=0; x<data[index].release_set.length; x++) {
             let segment = document.createElement("div");
             segment.classList = ["segment"];
             segment.innerHTML = "<div class=\"release-meta\"><h3></h3></div>"
             let title = segment.querySelector(".release-meta h3");
-            title.innerText = data[index].release_set[i].release_name.replace(/\_/g, ' ');
+            title.innerText = data[index].release_set[x].release_name.replace(/\_/g, ' ');
             
-            for (let j=0; j<data[index].release_set[i].link_set.length; j++) {
+            for (let y=0; y<data[index].release_set[x].link_set.length; y++) {
                 let linkDiv = document.createElement("div");
                 linkDiv.classList = ["download-link"];
                 linkDiv.innerHTML = "<a href=\"#a\"></a><div class=\"link-passcode\"></div>";
-                linkDiv.querySelector("a").innerText = data[index].release_set[i].link_set[j].url;
+                linkDiv.querySelector("a").innerText = data[index].release_set[x].link_set[y].url;
                 linkDiv.querySelector("a").addEventListener('click', handleAElemClick, false);
-                linkDiv.querySelector(".link-passcode").innerText = data[index].release_set[i].link_set[j].passcode;
+                linkDiv.querySelector(".link-passcode").innerText = data[index].release_set[x].link_set[y].passcode;
                 segment.appendChild(linkDiv);
             }
             modal.querySelector(".download-modal-body").appendChild(segment);
@@ -128,10 +128,10 @@
     function handleSearch() {
         let query = document.getElementById('searchInput').value;
         albumLoop:
-        for (let i=0; i<data.length; i++) {
+        for (let x=0; x<data.length; x++) {
             releaseLoop:
-            for (let j=0; j<data[i].release_set.length; j++) {
-                let rlsName = data[i].release_set[j].release_name.replace(/[\_\-]/g, ' ').toLowerCase();
+            for (let y=0; y<data[x].release_set.length; y++) {
+                let rlsName = data[x].release_set[y].release_name.replace(/[\_\-]/g, ' ').toLowerCase();
                 if (rlsName.includes(query.toLowerCase())) {
                     document.getElementById(i).classList.remove("hide");
                     break releaseLoop;
@@ -142,8 +142,8 @@
         }
     }
 
-    for (let i = 0; i < data.length; i++) {
-        populateGallery(g, i, data[i].title, data[i].artist, data[i].cover_art, data[i].genre, data[i].date)
+    for (let x = 0; x < data.length; x++) {
+        populateGallery(g, x, data[x].title, data[x].artist, data[x].cover_art, data[x].genre, data[x].date)
     }
 
     document.querySelector(".download-modal-close").onclick = function () {
@@ -158,8 +158,8 @@
         }
     }
 
-    for (let i = 0; i < g.children.length; i++) {
-        g.children[i].addEventListener('click', handleClicks, false);
+    for (let x = 0; x < g.children.length; x++) {
+        g.children[x].addEventListener('click', handleClicks, false);
     }
 
     document.getElementById('searchInput').onkeyup = handleSearch;
