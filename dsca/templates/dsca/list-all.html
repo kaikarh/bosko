@@ -25,12 +25,32 @@
       </form>
       time
     </h5>
-    <div class="list">
-      <ul>
+
+    <div class="list mt-3">
+      <ul class="list-group list-group-flush">
         {% for record in object_list %}
-        <li>
-          <div class="record">
-            {{ record.time }}
+        <li class="list-group-item d-flex justify-content-between align-items-start">
+          <div class="record ms-1 me-auto">
+            <div class="my-1">{{ record.referer|urlize }}</div>
+            <div class="my-1">
+              <span class="badge bg-secondary text-wrap">
+                {{ record.time|date:"SHORT_DATE_FORMAT" }}
+                {{ record.time|time:"H:i:s" }}
+              </span>
+              <span class="align-middle ms-2">
+                <span>{{ record.country }}</span>
+                <span><mark>{{ record.origin }}</mark></span>
+              </span>
+              <span class="align-middle fw-bold ms-2">
+                <span>
+                  {% if record.release_name %}
+                    {{ record.release_name }}
+                  {% else %}
+                    {{ record.destination }}
+                  {% endif %}
+                </span>
+              </span>
+            </div>
           </div>
         </li>
         {% endfor %}

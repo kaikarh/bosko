@@ -182,6 +182,7 @@ class ReleaseDetailMakeView(LoginRequiredMixin, DetailView):
     def post(self, request, *args, **kwargs):
         release = Release.objects.get(pk=kwargs['pk'])
         form = PostForm(request.POST)
+        aplform = AplForm()
 
         rendered = render_post(form)
         rendered_post = rendered.get('post')
