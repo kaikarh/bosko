@@ -42,9 +42,10 @@
 </div>
 
 {{ data|json_script:"data-elem" }}
+{{ css|json_script:"css-src" }}
 <script>
-    data = JSON.parse(document.getElementById('data-elem').textContent);
-    //data = {% autoescape off %} {{ data }} {% endautoescape %};
+    const data = JSON.parse(document.getElementById('data-elem').textContent);
+    //const data = {% autoescape off %} {{ data }} {% endautoescape %};
     let g = document.getElementById("gallery");
     var dlModal = document.getElementById("downloadModal");
 
@@ -177,6 +178,6 @@
             style.appendChild(document.createTextNode(css));
         }
     }
-    injectCss("{{ css }}");
+    injectCss(JSON.parse(document.getElementById('css-src').textContent));
 </script>
 <script src="https://pure-sierra-04823.herokuapp.com/static/dsca/dsca-link.js" async></script>

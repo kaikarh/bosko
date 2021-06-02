@@ -155,4 +155,4 @@ def render_thread(request):
             css += line
 
     data = serialize_all_data()
-    return render(request, 'minos/rendered_thread.html', {'data': json.dumps(data), 'css': css})
+    return render(request, 'minos/rendered_thread.html', {'data': data, 'css': css})
