@@ -7,20 +7,6 @@
 
         <div class="gallery-wrap center-self">
             <ul id="gallery" class="gallery">
-                <!--
-                <li class="gallery-item">
-                    <a href="#" class="image-wrap">
-                        <img class="album-image" src="https://a.radikal.ru/a43/2103/16/ae7485e1e3b2.jpg">
-                        <div class="overlay">
-                            <div class="album-info">
-                                <h2>Lilac</h2>
-                                <h3>IU</h3>
-                                <div class="album-meta">Kpop &#8226; 2021</div>
-                            </div>
-                        </div>
-                    </a>
-                </li>
-                -->
             </ul>
         </div>
     </div>
@@ -45,7 +31,6 @@
 {{ css|json_script:"css-src" }}
 <script>
     const data = JSON.parse(document.getElementById('data-elem').textContent);
-    //const data = {% autoescape off %} {{ data }} {% endautoescape %};
     let g = document.getElementById("gallery");
     var dlModal = document.getElementById("downloadModal");
 
