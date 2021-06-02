@@ -44,14 +44,12 @@ class ListAllView(LoginRequiredMixin, generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        release_names = []
         for record in context['object_list']:
             try:
                 release = Release.objects.filter(share_link=record.destination)[0]
                 record.release_name = release.release_name
             except Exception:
                 continue
-        context['release_names'] = release_names
         return context
 
     def get(self, request, *args, **kwargs):
