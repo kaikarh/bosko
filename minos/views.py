@@ -103,7 +103,7 @@ def update_flac_post(np, thread_url):
             line = line.strip()
             css += line
     message = render_to_string('minos/rendered_thread.html',
-                            {'data': json.dumps(serialize_all_data()), 'css': css})
+                            {'data': serialize_all_data(), 'css': css})
     post = np.edit_thread(thread_url,
                 subject.encode('gbk', 'ignore'),
                 message.encode('gbk', 'ignore'))
