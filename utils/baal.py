@@ -123,7 +123,7 @@ class Baal:
             'web': 1,
             'app_id': 250528,
             'bdstoken': bdstoken,
-            'logid': 'RTdFQzZGODZFRDYwQjY5NURFRUFGMjM3MTc0QjU4NUQ6Rkc9MQ==',
+            'logid': 'QzlEOURFMDgyQjkyQTkwRUZBMkQ5MzhBQjIxNzY2NEY6Rkc9MQ==',
             'clienttype': 0
         }
         form = {
