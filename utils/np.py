@@ -61,11 +61,10 @@ class Np:
         for field in fields:
             # get all fields that are to be posted in request
             if field.attrs.get('name'):
-                # ignore unchecked radio button
-                if field.attrs.get('type') == 'radio':
-                    try:
-                        checked = field.attrs['checked']
-                    except KeyError:
+                # ignore unchecked
+                if field.attrs.get('type') == 'radio' or \
+                    field.attrs.get('type') == 'checkbox':
+                    if not field.has_attr('checked'):
                         continue
                 # ignore buttons
                 if field.attrs.get('type') == 'button':
