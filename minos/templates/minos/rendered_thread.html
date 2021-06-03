@@ -118,10 +118,10 @@
             for (let y=0; y<data[x].release_set.length; y++) {
                 let rlsName = data[x].release_set[y].release_name.replace(/[\_\-]/g, ' ').toLowerCase();
                 if (rlsName.includes(query.toLowerCase())) {
-                    document.getElementById(i).classList.remove("hide");
+                    document.getElementById(x).classList.remove("hide");
                     break releaseLoop;
                 } else {
-                    document.getElementById(i).classList.add("hide");
+                    document.getElementById(x).classList.add("hide");
                 }
             }
         }
