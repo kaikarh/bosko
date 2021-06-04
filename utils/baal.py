@@ -70,9 +70,9 @@ class Baal:
             'dir': path,
             't': random.random(),
             'channel': 'chunlei',
-            'app_id': 250528,
+            #'app_id': 250528,
             'bdstoken': bdstoken,
-            'logid': 'RTdFQzZGODZFRDYwQjY5NURFRUFGMjM3MTc0QjU4NUQ6Rkc9MQ==',
+            #'logid': 'QzlEOURFMDgyQjkyQTkwRUZBMkQ5MzhBQjIxNzY2NEY6Rkc9MQ==',
             'clienttype': 0
         }
         url = urljoin(self.base_url, self.list_url)
@@ -121,9 +121,9 @@ class Baal:
             'channel': 'chunlei',
             'clienttype': 0,
             'web': 1,
-            'app_id': 250528,
+            #'app_id': 250528,
             'bdstoken': bdstoken,
-            'logid': 'QzlEOURFMDgyQjkyQTkwRUZBMkQ5MzhBQjIxNzY2NEY6Rkc9MQ==',
+            #'logid': 'QzlEOURFMDgyQjkyQTkwRUZBMkQ5MzhBQjIxNzY2NEY6Rkc9MQ==',
             'clienttype': 0
         }
         form = {
