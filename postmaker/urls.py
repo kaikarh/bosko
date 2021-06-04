@@ -8,6 +8,7 @@ urlpatterns = [
     path('make', views.make, name='make'),
     path('np', views.np, name='np'),
     path('releases/', views.ReleaseList.as_view(), name='release_list'),
+    path('releases/<type>/', views.ReleaseList.as_view(), name='release_list_type_filtered'),
     path('releases/<int:pk>/', views.ReleaseDetailView.as_view(), name='release_detail'),
     path('releases/<int:pk>/make', views.ReleaseDetailMakeView.as_view(), name='release_detail_make'),
     path('api/set-posted', views.set_posted, name='set_posted'),

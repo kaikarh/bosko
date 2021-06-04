@@ -5,7 +5,7 @@ from datetime import datetime
 
 from django.shortcuts import render
 from django.template import loader
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView
 from django.views.generic import DetailView
@@ -150,7 +150,16 @@ class ReleaseList(ListView):
     #model = Release
     context_object_name = 'release_list'
     template_name = 'postmaker/releases.html'
-    queryset = Release.objects.order_by('-time')
+
+    def get_queryset(self):
+        if self.kwargs.get('type'):
+            if self.kwargs['type'].upper() == 'MP3':
+                return Release.objects.exclude(release_name__contains='FLAC-').order_by('-time')
+            elif self.kwargs['type'].upper() == 'FLAC':
+                return Release.objects.filter(release_name__contains='FLAC-').order_by('-time')
+            else:
+                raise Http404
+        return Release.objects.order_by('-time')
 
 class ReleaseDetailView(LoginRequiredMixin, DetailView):
     model = Release
