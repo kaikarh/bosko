@@ -6,6 +6,10 @@ body {
   justify-content: center;
 }
 
+form > div {
+  margin-bottom: 1rem;
+}
+
 .form-wrapper {
   padding-top: 4rem;
   margin-right: 0;

@@ -1,16 +1,21 @@
 from django.urls import path
 
+from django.views.generic.base import RedirectView
 from . import views
 
 app_name = 'postmaker'
 urlpatterns = [
     path('', views.main),
-    path('make', views.make, name='make'),
     path('np', views.np, name='np'),
     path('releases/', views.ReleaseList.as_view(), name='release_list'),
     path('releases/<int:pk>/', views.ReleaseDetailView.as_view(), name='release_detail'),
-    path('releases/<int:pk>/make', views.ReleaseDetailMakeView.as_view(), name='release_detail_make'),
+    path('releases/<int:pk>/edit', views.ReleaseEditView.as_view(), name='release-edit'),
+    path('releases/<int:pk>/edit/link', views.ReleaseLinkEditView.as_view(), name='release-link-edit'),
+    path('releases/<int:pk>/makepost/', views.ReleaseAlbumPostCreate.as_view(), name='release-albumpost-create'),
     path('releases/<type>/', views.ReleaseList.as_view(), name='release_list_type_filtered'),
+    path('albumpost/make/', views.AlbumPostCreate.as_view(), name='albumpost-create'),
+    path('albumpost/result/', views.AlbumPostResult.as_view(), name='albumpost-result'),
+    path('albumpost/', RedirectView.as_view(pattern_name='postmaker:albumpost-create'), name='albumpost-redirect'),
     path('api/set-posted', views.set_posted, name='set_posted'),
     path('api/am', views.fetch_am, name='fetch_am'),
     path('api/post-with-id', views.post_to_forum_with_id, name='post_with_id'),

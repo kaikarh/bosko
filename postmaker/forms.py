@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Release
+from .models import Release, Link, AlbumPost
 
 # custom widget with datalist
 class ListTextWidget(forms.TextInput):
@@ -63,15 +63,59 @@ class PostForm(forms.Form):
         for field in self.visible_fields():
             field.field.widget.attrs['class'] = 'form-control'
 
+class BootstrapStyledForm(forms.ModelForm):
+    error_css_class = 'alert alert-warning'
 
-class ReleaseForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super(ReleaseForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
-            field.widget.attrs['class'] = 'form-control'
+            field.widget.attrs.update({'class': 'form-control'})
+    
+    def __getitem__(self, name):
+        # rewrite the getitem implementation to add extra class for label
+        boundfield = super().__getitem__(name)
+        boundfield.label_tag = self.label_tag_with_form_label_class(boundfield.label_tag)
+        return boundfield
 
+    def label_tag_with_form_label_class(self, f):
+        def inner(contents=None, attrs=None, label_suffix=None):
+            if not attrs: attrs = {}
+            attrs.update({'class': 'form-label'})
+            return f(contents, attrs, label_suffix)
+        return inner
+
+    def as_div(self):
+        # Return this form rendered as HTML <div>s.
+        return self._html_output(
+            normal_row='<div%(html_class_attr)s>%(errors)s%(label)s %(field)s%(help_text)s</div>',
+            error_row='<div>%s</div>',
+            row_ender='</div>',
+            help_text_html=' <span class="helptext">%s</span>',
+            errors_on_separate_row=False,
+        )
+
+class ReleaseForm(BootstrapStyledForm):
     class Meta:
         model = Release
         fields = ['release_name', 'archive_name', 'archive_size',
                   'stream_song_name', 'stream_song_url', 'share_link',
                   'share_link_passcode', 'adam_id',  'post_url']
+
+class AlbumPostForm(BootstrapStyledForm):
+    class Meta:
+        model = AlbumPost
+        fields = '__all__'
+
+LinkFormset = forms.modelformset_factory(Link, 
+    exclude=('original_poster', 'release'), 
+    form=BootstrapStyledForm,
+    extra=0
+)
+
+LinkInlineFormSet = forms.inlineformset_factory(
+    Release,
+    Link,
+    fields=('url', 'passcode'),
+    form=BootstrapStyledForm,
+    extra=1
+)

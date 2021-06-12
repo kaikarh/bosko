@@ -1,0 +1,11 @@
+{% extends "postmaker/release_base.html" %}
+
+{% block title %}
+Editing {{ object }} | {{ block.super }}
+{% endblock %}
+
+{% block release_specific %}
+<div class="mt-5">
+    {% include "postmaker/albumpost_form_snippet.html" %}
+</div>
+{% endblock %}

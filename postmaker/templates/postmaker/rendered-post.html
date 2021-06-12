@@ -3,27 +3,27 @@
     <div class="album-info">
       <div class="album-lockup">
         <div class="album-artwork">
-          <img class="album-artwork-img" src="{{ album.artwork }}">
+          <img class="album-artwork-img" src="{{ album.artwork_url }}">
         </div>
       </div>
 
       <div class="header-and-tracks">
         <div class="album-header">
           <div class="album-header-meta">
-            <h1 class="album-title">{{ album.title }}</h1>
-            <h2 class="album-artist">{{ album.artist }}</h2>
-            <h3 class="album-meta-info">{{ album.genre|upper }} &#8226; {{ album.year }}</h3>
+            <h1 class="album-title">{{ album.collection_name }}</h1>
+            <h2 class="album-artist">{{ album.artist_name }}</h2>
+            <h3 class="album-meta-info">{{ album.genre_name|upper }} &#8226; {{ album.release_date }}</h3>
           </div>
           <div class="album-notes">
             <div class="description-container">
               <div class="description-data">
-                {% if album.description %}
-                  <p>
-                    <span class="line-title">
-                      介紹
-                    </span>
-                    {{ album.description }}
-                  </p>
+                {% if album.notes %}
+                <p>
+                  <span class="line-title">
+                    介紹
+                  </span>
+                  {{ album.notes }}
+                </p>
                 {% endif %}
               </div>
             </div>
@@ -38,9 +38,9 @@
             </div>
             <div class="tracklist-col song-title">
               {% if track.name %}
-                <span>{{ track.name }}</span>
+              <span>{{ track.name }}</span>
               {% else %}
-                <span>{{ track }}</span>
+              <span>{{ track }}</span>
               {% endif %}
             </div>
           </div>
@@ -51,34 +51,41 @@
           <div class="song-stat-container">
             共 {{ album.tracks|length }} 首
           </div>
+
           <div class="release-stat-container">
-            {% if album.parsed_rls.web %}
-              WEB / SCENE / MP3 320K
-            {% elif album.archive_name %}
-              CD / SCENE / MP3 V0
+            {% if album.rip_source == 'unknown' or not album.rip_source %}
+              UNKNOWN / P2P
             {% else %}
-              {{ album.rip_info|upper }}
+              SCENE /
+              {{ album.rip_source|upper }} /
+              MP3
+              {% if album.rip_source == 'web' %}
+                320K
+              {% else %}
+                V0
+              {% endif %}
             {% endif %}
           </div>
           <div class="release-footnotes">
-            {% if album.archive_name %}
-              ZIP / PASSWORD PROTECTED 
-              {% if album.archive_size > 0 %}
+            {% if album.archive_size %}
+              ZIP / PASSWORD PROTECTED
               / {{ album.archive_size|filesizeformat }}
-              {% endif %}
-            {% else %}
-              {{ album.arc_info|upper }}
             {% endif %}
           </div>
-          {% if album.hidden_info %}
+          {% for item in album.miscellaneous %}
+          <div>
+            {{ item }}
+          </div>
+          {% endfor %}
+
+          {% if album.archive_size or album.hidden_content %}
           <div class="hidden-info-wrapper">
             [hide=1]
             <div class="hidden-info-content">
-              {% if album.archive_name %}
-                密码：needpop.com
-              {% else %}
-                {{ album.hidden_info }}
+              {% if album.archive_size %}
+                <div>密码：needpop.com</div>
               {% endif %}
+              <div>{{ album.hidden_content }}</div>
             </div>
             [/hide]
           </div>
@@ -89,17 +96,13 @@
     </div>
 
     <div class="download-info">
-      {% if album.stream_url %}
-        <div class="streaming">
-          <audio
-              controls preload=auto id="audio-player"
-              src="{{ album.stream_url }}">
-                  瀏覽器不支援
-                  <span>audio</span> element
-                  ，請更新到新版本的Chrome或Firefox。
-          </audio>
-        </div>
-      {% endif %}      
+      <div class="streaming">
+        <audio controls preload=auto id="audio-player" src="{{ album.lq_stream_url }}">
+          瀏覽器不支援
+          <span>audio</span> element
+          ，請更新到新版本的Chrome或Firefox。
+        </audio>
+      </div>
       <div class="button-content">
         <button class="download-button" id="download-button" type="button">
           下載連結
@@ -116,23 +119,21 @@
       <span class="download-modal-close">&times;</span>
     </div>
     <div class="download-modal-body">
-      <div class="download-link">
-        <a id="download-link" href="{{ album.download_link }}" target="_blank">{{ album.download_link }}</a>
-      </div>
-      <div class="link-passcode">
-        提取码: {{ album.download_passcode }}
-      </div>
-    </div>  
+    </div>
     <div class="download-modal-footer">
     </div>
   </div>
 </div>
 
 {{ album.tracks|json_script:"tracks-data" }}
+{{ album.download_links|json_script:"link-set" }}
 {{ css|json_script:"css-src" }}
 <script>document.styleSheets[0].cssRules[111].style.removeProperty('overflow');</script>
 <script>
   const tracks = JSON.parse(document.getElementById('tracks-data').textContent);
+  const links = JSON.parse(document.getElementById('link-set').textContent);
+  const dlModal = document.getElementById("downloadModal");
+  const downloadBtn = document.getElementById("download-button");
   var tracksDiv = document.querySelectorAll('.track');
   var audioPlayer = document.getElementById('audio-player');
 
@@ -149,7 +150,7 @@
     let index = Array.prototype.indexOf.call(clicked.parentElement.children, clicked);
 
     if (currentPlaying === clicked) {
-      return ;
+      return;
     }
 
     try {
@@ -189,33 +190,63 @@
     }
     function makeChildrenSpanDisplayBlock(elem) {
       let span = elem.getElementsByTagName('span');
-      for (let counter=0; counter<span.length; counter++) {
+      for (let counter = 0; counter < span.length; counter++) {
         span[counter].style.display = 'block';
       }
     }
 
-    for (let counter=0; counter<elemSet.length; counter++) {
+    for (let counter = 0; counter < elemSet.length; counter++) {
       removeChildrenBr(elemSet[counter]);
       makeChildrenSpanDisplayBlock(elemSet[counter]);
     }
   }
 
-  var dlModal = document.getElementById("downloadModal");
-  document.getElementById("download-button").onclick = function () {
-    // let x = document.getElementById("link-wrapper");
-    // x.classList.add("show");
+  function populateDownloadModal(modal, link_set) {
+    let segment = document.createElement("div");
+    segment.classList = ["segment"];
+    segment.innerHTML = "<div class=\"release-meta\"><h3></h3></div>"
+    for (let y = 0; y < link_set.length; y++) {
+      let linkDiv = document.createElement("div");
+      linkDiv.classList = ["download-link"];
+      linkDiv.innerHTML = "<a href=\"#\"></a><div class=\"link-passcode\"></div>";
+      linkDiv.querySelector("a").textContent = link_set[y].url;
+      linkDiv.querySelector("a").addEventListener('click', handleAElemClick, false);
+      linkDiv.querySelector(".link-passcode").textContent = link_set[y].passcode ? link_set[y].passcode : '';
+      segment.appendChild(linkDiv);
+    }
+    modal.querySelector(".download-modal-body").appendChild(segment);
+  }
 
+  function handleDownloadBtnClick(e) {
     dlModal.style.display = "block";
-    fireApi();
+    populateDownloadModal(dlModal, links);
   }
 
-  document.querySelector(".download-modal-close").onclick = function() {
+  function handleAElemClick(e) {
+    console.log(e.target);
+    e.target.id = 'download-link';
+    window.open(e.target.innerText);
+    //fireApi();
+  }
+
+  function resetDownloadModal(modal) {
+    let e = modal.querySelector(".download-modal-body");
+    while (e.firstChild) {
+      e.removeChild(e.firstChild);
+    }
+  }
+
+  downloadBtn.addEventListener('click', handleDownloadBtnClick, false);
+
+  document.querySelector(".download-modal-close").onclick = function () {
     dlModal.style.display = "none";
+    resetDownloadModal(dlModal);
   }
 
-  window.onclick = function(event) {
+  window.onclick = function (event) {
     if (event.target === dlModal) {
       dlModal.style.display = "none";
+      resetDownloadModal(dlModal);
     }
   }
 

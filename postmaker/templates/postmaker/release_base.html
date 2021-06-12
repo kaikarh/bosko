@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block title %}
-{{ release }} | {{ block.super }}
+{{ object }} | {{ block.super }}
 {% endblock %}
 
 {% block content %}
@@ -11,52 +11,35 @@
   <div class="card text-center">
     <div class="card-header">
       Release - Posted
-      {% if release.posted %}
+      {% if object.posted %}
       ✅
       {% else %}
       ❌
       {% endif %}
     </div>
     <div class="card-body">
-      <h3 class="card-title">{{ release }}</h3>
+      <h3 class="card-title">{{ object }}</h3>
       <p class="card-text"></p>
       <div class="btn-arr d-flex flex-row justify-content-around">
-        <a href="{% url 'postmaker:release_detail_make' release.pk %}" class="btn btn-primary">
+        <a href="{% url 'postmaker:release-albumpost-create' object.pk %}" class="btn btn-primary">
           Go make a forum post
         </a>
         <div class="input-group" style="max-width: 250px;">
           {% csrf_token %}
-          <input type="hidden" id="pk" name="pk" value="{{ release.pk }}">
+          <input type="hidden" id="pk" name="pk" value="{{ object.pk }}">
           <input class="form-control" id="adamIDInput" type="text">
           <button type="button" class="btn btn-outline-secondary" id="adamIDPostBtn">Post As ID</button>
         </div>
       </div>
     </div>
     <div class="card-footer text-muted">
-      {{ release.time|timesince }}
+      {{ object.time|timesince }}
     </div>
   </div>
-  <div>
-    <a href="">
 
-    </a>
-  </div>
-  <div class="form mt-5 pb-3">
-    <form>
-      {% for field in form %}
-      <div class="field-error">
-        {{ field.errors }}
-      </div>
-      <div class="input-group mb-3">
-        <label class="input-group-text" for="{{ field.id_for_label }}">
-          {{ field.label }}
-        </label>
+  {% block release_specific %}
+  {% endblock %}
 
-        {{ field }}
-      </div>
-      {% endfor %}
-    </form>
-  </div>
 </div>
 <script>
   var postButton = document.getElementById("adamIDPostBtn");
@@ -73,10 +56,10 @@
     };
 
     let spinner = document.createElement("span");
-        infoBox.textContent = "...";
-        spinner.classList.add("spinner-border", "spinner-border-sm");
-        postButton.textContent = "";
-        postButton.appendChild(spinner);
+    infoBox.textContent = "...";
+    spinner.classList.add("spinner-border", "spinner-border-sm");
+    postButton.textContent = "";
+    postButton.appendChild(spinner);
 
     fetch(api_url, {
       method: 'POST',

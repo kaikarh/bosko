@@ -5,16 +5,18 @@ from datetime import datetime
 
 from django.shortcuts import render
 from django.template import loader
-from django.http import HttpResponse, JsonResponse, Http404
+from django.urls import reverse_lazy
+from django.http import HttpResponse, JsonResponse, Http404, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import ListView
-from django.views.generic import DetailView
+from django.views.generic import ListView, DetailView, FormView, TemplateView
+from django.views.generic.edit import UpdateView
+from django.views.generic.detail import SingleObjectMixin
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from .models import Release
-from .forms import AplForm, PostForm, ReleaseForm
+from .models import Release, Link, AlbumPost
+from .forms import AplForm, PostForm, ReleaseForm, LinkInlineFormSet, AlbumPostForm, LinkFormset
 from utils.amParser import Am
 from utils.np import Np
 from utils.baal import Baal
@@ -163,49 +165,71 @@ class ReleaseList(ListView):
 
 class ReleaseDetailView(LoginRequiredMixin, DetailView):
     model = Release
-    template_name = 'postmaker/release-detail.html'
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super().get_context_data(**kwargs)
-        form = ReleaseForm(instance=context['release'])
-        context['form'] = form
-        return context
 
-class ReleaseDetailMakeView(LoginRequiredMixin, DetailView):
+class ReleaseEditView(LoginRequiredMixin, UpdateView):
     model = Release
-    template_name = 'postmaker/release-detail-make.html'
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super().get_context_data(**kwargs)
-        aplform = AplForm()
-        form = PostForm({'arc_info': 'zip / Password Protected',
-                         'stream_url': context['release'].stream_song_url,
-                         'hidden_info': '密码：needpop.com',
-                         'download_link': context['release'].share_link,
-                         'download_passcode': context['release'].share_link_passcode})
-        # Add in the publisher
-        context['aplfrm'] = aplform
-        context['form'] = form
-        return context
+    form_class = ReleaseForm
+    template_name_suffix = '_update_form'
+
+class ReleaseLinkEditView(LoginRequiredMixin, UpdateView):
+    model = Release
+    form_class = LinkInlineFormSet
+    template_name_suffix = '_update_form'
+
+    def form_valid(self, form):
+        form.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+class AlbumPostCreate(FormView):
+    form_class = AlbumPostForm
+    template_name = 'postmaker/albumpost_create.html'
+    success_url = reverse_lazy('postmaker:albumpost-result')
+
+    def form_valid(self, form):
+        # Save form to session
+        self.request.session['album_post'] = form.cleaned_data
+        print(self.request.session)
+        return super().form_valid(form)
+
+class ReleaseAlbumPostCreate(SingleObjectMixin, AlbumPostCreate):
+    model = Release
+    template_name = 'postmaker/release_albumpost_create.html'
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        release = Release.objects.get(pk=kwargs['pk'])
-        form = PostForm(request.POST)
-        aplform = AplForm()
+        self.object = self.get_object()
+        return super().post(request, *args, **kwargs)
 
-        rendered = render_post(form)
-        rendered_post = rendered.get('post')
-        data = rendered.get('album')
-        if rendered_post:
-            accounts = request.session.get('np_accounts')
-            print(request.session.items())
-            return render(request,
-                          'postmaker/result.html',
-                          context={'code': rendered_post,
-                                   'album': data,
-                                   'accounts': accounts,
-                                   'release': release})
-        return render(request, 'postmaker/make-post.html', {'form': form, 'aplfrm': aplform})
+    def get_initial(self):
+        try:
+            return self.object.albumpost_values()
+        except Exception:
+            return self.initial.copy()
+
+class AlbumPostResult(TemplateView):
+    template_name = 'postmaker/albumpost_result.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        try:
+            album_post = self.request.session.pop('album_post')
+        except KeyError:
+            # No data was supplied to generate a result
+            raise Http404
+        context['rendered_post'] = render_post(album_post)
+        context['meta'] = {
+            'accounts': self.request.session.get('np_accounts'),
+            'subject': '{} - {} ({})'.format(
+                album_post.get('artist_name'),
+                album_post.get('collection_name'),
+                album_post.get('release_date')
+            )
+        }
+        return context
 
 def set_posted(request):
     if request.method == 'POST':
@@ -226,93 +250,21 @@ def set_posted(request):
 
     return HttpResponse('Bad Request', status=400)
 
-
-def render_post(form):
-    rendered_post = ''
-    if form.is_valid():
-        data = dict(form.cleaned_data)
-        if data['apple_tracks']:
-            data['tracks'] = data['apple_tracks'].split(',')
-        else:
-            # couldnt get tracklist from apple, try to parse tracklist 
-            # Amazon Music filter
-            #exp = re.compile(r"([\w\(\)\ \'\!\[\]\?]{2,})(?:\t[0-9\:]+)")
-            # Wikipedia music filter
-            #exp = re.compile(r'\"(.+)\"')
-            # bootcamp filter
-            exp = re.compile(r"([\w\(\)\ \.\&\’\/\[\]]+)(?:\W\d+:\d+)")
-            # simple filter
-            #exp = re.compile(r"\ ([a-zA-Z\ ]+)")
-            tracks = exp.findall(data['tracks'])
-            data['tracks'] = tracks
-
-        # Read style file for the post thread
-        css = ''
-        style_file_path = path.join(path.dirname(path.realpath(__file__)),
-                        'static/{}/threadstyle.css'.
-                        format(__name__.split('.')[0]))
-        with open(style_file_path) as f:
-            for line in f:
-                line = line.strip()
-                css += line
-
-        #template = loader.get_template('postmaker/rendered-post.html')
-        #rendered = template.render({'album': data})
-        rendered_post = loader.render_to_string('postmaker/rendered-post.html', {'album': data, 'css': css})
-    return { 'post': rendered_post, 'album': data }
-
-def make(request):
-    aplform = AplForm()
-    form = PostForm()
+def render_post(album_post):
+    # Read style file for the post thread
     css = ''
+    style_file_path = path.join(path.dirname(path.realpath(__file__)),
+                    'static/{}/threadstyle.css'.
+                    format(__name__.split('.')[0]))
+    with open(style_file_path) as f:
+        for line in f:
+            line = line.strip()
+            css += line
 
-    # post request
-    if request.method == 'POST':
-        form = PostForm(request.POST)
-
-        if form.is_valid():
-            data = dict(form.cleaned_data)
-            if data['apple_tracks']:
-                data['tracks'] = data['apple_tracks'].split(',')
-            else:
-                # couldnt get tracklist from apple, try to parse tracklist 
-                # Amazon Music filter
-                #exp = re.compile(r"([\w\(\)\ \'\!\[\]\?]{2,})(?:\t[0-9\:]+)")
-                # Wikipedia music filter
-                #exp = re.compile(r'\"(.+)\"')
-                # bootcamp filter
-                exp = re.compile(r"([\w\(\)\ \.\&\’\/\[\]]+)(?:\W\d+:\d+)")
-                # simple filter
-                #exp = re.compile(r"\ ([a-zA-Z\ ]+)")
-                tracks = exp.findall(data['tracks'])
-                data['tracks'] = tracks
-
-            # Read style file for the post thread
-            style_file_path = path.join(path.dirname(path.realpath(__file__)),
-                            'static/{}/threadstyle.css'.
-                            format(__name__.split('.')[0]))
-            with open(style_file_path) as f:
-                for line in f:
-                    line = line.strip()
-                    css += line
-
-            #template = loader.get_template('postmaker/rendered-post.html')
-            #rendered = template.render({'album': data})
-            rendered_post = loader.render_to_string('postmaker/rendered-post.html', {'album': data, 'css': css})
-
-            accounts = request.session.get('np_accounts')
-            print(request.session.items())
-            return render(request,
-                          'postmaker/result.html',
-                          context={'code': rendered_post,
-                                   'album': data,
-                                   'accounts': accounts})
-        else:
-            # send back the form with error message
-            return render(request, 'postmaker/make-post.html', {'form': form, 'aplfrm': aplform})
-
-    # normal get request - render an empty form
-    return render(request, 'postmaker/make-post.html', {'form': form, 'aplfrm': aplform})
+    #template = loader.get_template('postmaker/rendered-post.html')
+    #rendered = template.render({'album': data})
+    rendered_post = loader.render_to_string('postmaker/rendered-post.html', {'album': album_post, 'css': css})
+    return rendered_post
 
 @csrf_exempt
 def get_share_link(request):

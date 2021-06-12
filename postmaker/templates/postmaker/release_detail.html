@@ -1,0 +1,47 @@
+{% extends "postmaker/release_base.html" %}
+
+{% block title %}
+{{ object }} | {{ block.super }}
+{% endblock %}
+
+{% block release_specific %}
+  <div class="mt-2 pb-3 table-responsive">
+    <table class="table table-striped align-middle">
+        <tbody>
+            <thead><tr><td></td><td></td></tr></thead>
+            {% for name, value in object.get_fields %}
+                <tr>
+                    <th scope="row">{{ name|title }}</th>
+                    <td>{{ value }}</td>
+                </tr>
+            {% endfor %}
+
+            <tr>
+                <th scope="row">
+                    Download Link{{ object.link_set.all|length|pluralize }}
+                </th>
+                <td>
+                    {% if object.link_set.all %}
+                        <table class="table mb-0">
+                            {% for item in object.link_set.all %}
+                                <tr>
+                                    <th scope="row">Url</th>
+                                    <td>{{ item.url }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Code</th>
+                                    <td>{{ item.passcode }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    {% endif %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <a class="btn btn-primary" href="{% url 'postmaker:release-link-edit' object.pk %}">Edit Download Links</a>
+        <a class="btn btn-primary" href="{% url 'postmaker:release-edit' object.pk %}">Edit Release</a>
+    </div>
+  </div>
+{% endblock %}

@@ -6,6 +6,7 @@
 import sys, re, requests, json, logging, unicodedata
 from difflib import SequenceMatcher
 from pprint import pformat
+from .releaseparser import ReleaseParser
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(message)s',
@@ -26,26 +27,10 @@ class Tonos:
         return self.data
 
     def parse_rls_name(self, rls_name):
-        # group1 -> Artist Name
-        # group2 -> Album Title
-        # group3 -> Lang for FLAC
-        # group4 -> WEB
-        # group5 -> FLAC
-
-        match = re.search('([\w\.\-]*?)\-{1,2}([\w\.\-\(\)]*?)(?:\-\([A-Z\-\_\d]{4,}\))?(?:\-((?:CN)|(?:KR)|(?:JP)|(?:ES)))?(?:\-\(?(?:(?:P[Rr][Oo][Pp][Ee][Rr])|(?:R[Ee][Pp][Aa][Cc][Kk])|(?:D[Ii]RF[Ii]X))\)?)?(?:\-READNFO)?(?:\-P[Rr][Oo][Mm][Oo])?(?:\-[\w]*(?:(?:E[Dd][Ii][Tt][Ii][Oo][Nn])|(?:Retail)|(?:R[Ee][Ii][Ss][Ss][Uu][Ee])|(?:R[Ee][Mm][Aa][Ss][Tt][Ee][Rr][Ee][Dd])))?(?:\-\(?(?:(WEB)|(?:\d?CD(?:(?:[MRS]?)|(?:EP))|(?:\d?DVD)|(?:EP)|(?:V[Ii][Nn][Yy][Ll])))\)?)?(?:\-\d{2}BIT)?(?:\-(?:WEB)?(FLAC))?(?:\-([A-Z]{2}))?\-(\d{4})\-(?:\w+)', rls_name)
-
-        if match:
-            logger.debug('Regex match result {}'.format(match.groups()))
-            return {
-                'flac': True if match.group(5) else False,
-                'web': True if match.group(4) else False,
-                'artist': match.group(1).replace('_', ' '),
-                'title': match.group(2).replace('_', ' '),
-                'lang': match.group(6) if match.group(6) else match.group(3),
-                'year': match.group(7),
-            }
-        logger.info('Cannot parse release name (Regex did not match anything)')
-        return False
+        try:
+            return ReleaseParser.parse_name(rls_name)
+        except:
+            return None
 
     def _query_apple(self, query=None, a_id=None, country='US'):
         for attempt in range(3):
@@ -116,7 +101,7 @@ class Tonos:
         parsed_rls = self.data.get('parsed_rls')
         album_info = self.data.get('album_info')
         try:
-            release = '{} {}'.format(parsed_rls['artist'].lower(), parsed_rls['title'].lower())
+            release = '{} {}'.format(parsed_rls.artist.lower(), parsed_rls.title.lower())
             fetched = '{} {}'.format(album_info['artist'].lower(), album_info['title'].lower())
         except:
             return False
@@ -143,25 +128,18 @@ class Tonos:
         parsed_rls = self.parse_rls_name(rls_name)
         if parsed_rls:
             # if parsed a valid release name
-            query_term = '{} {}'.format(parsed_rls['artist'], parsed_rls['title'])
+            query_term = '{} {}'.format(parsed_rls.artist, parsed_rls.title)
         else:
             # cant even parse the release name
             return False
 
-        result = self._query_apple(query=query_term, country=parsed_rls['lang'])
+        result = self._query_apple(query=query_term, country=parsed_rls.lang)
         if result.get('resultCount'):
             # There's a search result
             logger.info('iTunes API Search result: [{}] {} - {}'.
                         format(result['results'][0]['collectionId'],
                                result['results'][0]['artistName'],
                                result['results'][0]['collectionName']))
-
-            # Basic match accuracy test
-            #if self._strip_stylization(parsed_rls['artist']) in \
-            #        self._strip_stylization(self._normalize_accented(result['results'][0]['artistName'])):
-            #    # Probably got a accurate result
-            #    # Continue to query album info
-            #    logger.debug('Found album, continuing')
 
             return result['results'][0]['collectionId']
         return None
@@ -176,7 +154,7 @@ class Tonos:
                 fallback = fallback[:3]
             else:
                 # no fallback country specified. Use default
-                fallback = ('GB', 'DE', 'JP', 'HK')
+                fallback = ('GB', 'DE', 'HK', 'JP')
 
             for _ in fallback:
                 fallback_result_dict = ''

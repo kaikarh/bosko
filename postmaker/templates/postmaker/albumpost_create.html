@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% load static %}
+
+
+{% block title %}
+Make A Post With Template | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5 pt-5">
+    {% include "postmaker/albumpost_form_snippet.html" %}
+</div>
+{% endblock %}

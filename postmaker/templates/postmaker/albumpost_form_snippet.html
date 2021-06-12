@@ -1,0 +1,52 @@
+{% load static %}
+
+<div class="row justify-content-evenly">
+    <div class="col-sm-5 col-md-4 col-lg-4">
+
+        <div class="mb-4">
+            <h1>Make A Post</h1>
+            <p class="lead text-secondary">Make an decent album info post</p>
+            <p class="text-secondary">Fill in the table or enter an apple music url to let the robot fetch and parse information for you</p>
+        </div>
+
+        <div class="utils-wrap">
+            <div class="form-group">
+              <div class="mb-2">
+                <label for="id_apple_music_url">Apple music url:</label>
+              </div>
+              <div class="input-group mb-3">
+                <input type="url" name="apple_music_url" class="form-control" id="id_apple_music_url">
+                <button class="btn btn-outline-secondary" type="button" href="#" id="id_apple_music_url-btn">Get!</button>
+              </div>
+              
+              <div class="field-error">
+                
+              </div>
+              <div class="mb-2">
+                <label for="id_baidu_share">Baidu share:</label>
+              </div>
+              <div class="input-group mb-3">
+                <input type="text" name="baidu_share" class="form-control" id="id_baidu_share">
+                <button class="btn btn-outline-secondary" type="button" href="#" id="id_baidu_share-btn">Get!</button>
+              </div>
+              
+            </div>
+          </div>
+    </div>
+
+    <div class="col col-md-6 col-lg-6">
+        <div class="mt-2 pb-3">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_div }}
+        
+                <div class="py-3 d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a class="btn btn-secondary" href="../">Cancel</a>
+                    <input class="btn btn-primary" type="submit" value="Submit">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="{% static 'postmaker/script.js' %}" async></script>
