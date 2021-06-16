@@ -1,3 +1,5 @@
+import json
+
 from django import forms
 
 from .models import Release, Link, AlbumPost
@@ -69,6 +71,8 @@ class BootstrapStyledForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
+            # skip boolean field
+            if isinstance(field, forms.fields.BooleanField): continue                
             field.widget.attrs.update({'class': 'form-control'})
     
     def __getitem__(self, name):
@@ -99,12 +103,50 @@ class ReleaseForm(BootstrapStyledForm):
         model = Release
         fields = ['release_name', 'archive_name', 'archive_size',
                   'stream_song_name', 'stream_song_url', 'share_link',
-                  'share_link_passcode', 'adam_id',  'post_url']
+                  'share_link_passcode', 'adam_id',  'posted', 'post_url']
 
 class AlbumPostForm(BootstrapStyledForm):
+    release_date = forms.CharField(required=False)
+    tracks = forms.CharField(required=False, widget=forms.Textarea)
     class Meta:
         model = AlbumPost
         fields = '__all__'
+
+    def clean_release_date(self):
+        data = self.cleaned_data['release_date']
+        if len(data) == 4:
+            data = f'{data}-01-01'
+        return data
+
+    def clean_tracks(self):
+        # Tracks field accepts various data format
+        # Clean all data to python list
+        def format_tracks(tracks_list):
+            tracks = []
+            for t in tracks_list:
+                if t:
+                    tracks.append({'name': t})
+            return tracks
+
+        tracks_string = self.cleaned_data['tracks']
+        try:
+            tracks = json.loads(tracks_string)
+        except ValueError as err:
+            # Comma seperated track names
+            if not tracks_string.count('\n'):
+                # Single line, comma seperated track string
+                tracks = tracks_string.split(',')
+            else:
+                # bootcamp filter
+                # Filters "trackname 00:00"
+                exp = re.compile(r"([\w\(\)\ \.\&\’\/\[\]]+)(?:\W\d+:\d+)")
+                # simple filter
+                #exp = re.compile(r"\ ([a-zA-Z\ ]+)")
+                tracks = exp.findall(tracks_string)
+            return format_tracks(tracks)
+        # its json
+        # pass it to model to continue validate
+        return tracks
 
 LinkFormset = forms.modelformset_factory(Link, 
     exclude=('original_poster', 'release'), 

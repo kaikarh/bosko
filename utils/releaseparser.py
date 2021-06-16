@@ -13,7 +13,7 @@ class ParsedRelease:
     title: str
     year: str
     lang: str = ''
-    encode: str = 'mp3'
+    coding: str = 'mp3'
     source: str = 'cd'
 
 class ReleaseParser:
@@ -34,7 +34,7 @@ class ReleaseParser:
                 title=match.group(2).replace('_', ' '),
                 year=match.group(7)
             )
-            if match.group(5): parsedrelease.encode = 'flac'
+            if match.group(5): parsedrelease.coding = 'flac'
             if match.group(4): parsedrelease.source = 'web'
             if match.group(6): 
                 parsedrelease.lang = match.group(6)

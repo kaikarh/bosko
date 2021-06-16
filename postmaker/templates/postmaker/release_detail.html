@@ -40,8 +40,8 @@
         </tbody>
     </table>
     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-        <a class="btn btn-primary" href="{% url 'postmaker:release-link-edit' object.pk %}">Edit Download Links</a>
         <a class="btn btn-primary" href="{% url 'postmaker:release-edit' object.pk %}">Edit Release</a>
+        <a class="btn btn-primary" href="{% url 'postmaker:release-link-edit' object.pk %}">Edit Download Links</a>
     </div>
   </div>
 {% endblock %}

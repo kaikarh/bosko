@@ -2,6 +2,7 @@
 # np.py - handles connection to needpop 
 # need an account
 
+from os import environ
 import bs4, requests, logging
 
 from urllib import parse
@@ -11,6 +12,7 @@ logger = logging.getLogger(__name__)
 class Np:
 
     POST_TITLE_MAX = 80
+    AUTOPOSTER = environ.get('AUTOPOSTER')
 
     def __init__(self, cdb_auth=None):
         # setup the session connection
@@ -18,6 +20,8 @@ class Np:
         self.login_url = parse.urljoin(self.host_url, '/logging.php?action=login')
         self.compose_url_base = parse.urljoin(self.host_url,
                                 '/post.php?action=newthread&fid={}&extra=page%3D1')
+        self.edit_url_base = parse.urljoin(self.host_url,
+                                '/post.php?action=edit&tid={}&pid={}')
         self.s = requests.Session()
         self.s.headers = {'user-agent': 'Mozilla/5.0 (Windows NT 6.0) Gecko/20100101 Firefox/14.0.1'}
 
@@ -151,10 +155,12 @@ class Np:
         # logout
         return (self.__get_page(parse.urljoin(self.host_url, logout_button.attrs['href']))).cookies
 
-    def edit_thread(self, thread_url, subject, message):
-        soup = self.__get_page_and_parse(thread_url)
+    def edit_thread(self, thread_id, post_id, subject, message):
+        #soup = self.__get_page_and_parse(thread_url)
         # Look for the edit button and get the compose url
-        compose_url = parse.urljoin(self.host_url, soup.find('a', text='编辑').attrs['href'])
+        #compose_url = parse.urljoin(self.host_url, soup.find('a', text='编辑').attrs['href'])
+
+        compose_url = self.edit_url_base.format(thread_id, post_id)
         soup = self.__get_page_and_parse(compose_url)
         form = soup.find('form')
         fields = self.__get_all_fields_in_form(form)
@@ -165,7 +171,7 @@ class Np:
         submit_url = parse.urljoin(self.host_url, form.attrs['action'])
         res = self.__post_page(submit_url, data=fields)
 
-        return res.url
+        return {'url': res.url}
 
 
     def post_thread(self, subject, message, forum_id=45, typeid=None):
@@ -199,8 +205,7 @@ class Np:
         # get title
         if len(wrapper.contents) <= 1:
             # server returned a login form
-            logger.warning('Post Failed: User not logged in or wrong credential')
-            raise Exception('Post Failed')
+            raise Exception('Post Failed: User not logged in or wrong credential')
         elif len(wrapper.contents) > 3:
             # forums that have typeid
             title = wrapper.contents[-2].get_text() + wrapper.contents[-1]

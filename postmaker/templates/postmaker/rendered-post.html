@@ -58,11 +58,13 @@
             {% else %}
               SCENE /
               {{ album.rip_source|upper }} /
-              MP3
-              {% if album.rip_source == 'web' %}
-                320K
-              {% else %}
-                V0
+              {{ album.coding|upper }}
+              {% if album.coding == 'mp3' %}
+                {% if album.rip_source == 'web' %}
+                  320K
+                {% else %}
+                  V0
+                {% endif %}
               {% endif %}
             {% endif %}
           </div>
@@ -223,10 +225,9 @@
   }
 
   function handleAElemClick(e) {
-    console.log(e.target);
     e.target.id = 'download-link';
     window.open(e.target.innerText);
-    //fireApi();
+    fireApi();
   }
 
   function resetDownloadModal(modal) {

@@ -92,7 +92,7 @@ def add_to_db(tonos, link, link_pwd=None):
     l = generate_link_record(r, link, link_pwd)
     cleanup_empty_record(a, r)
 
-def update_flac_post(np, thread_url):
+def update_flac_post(np, thread_id, post_id):
     subject = 'FLAC 無損音樂索引 - (Updated {})'.format(timezone.now().date())
     css = ''
     style_file_path = path.join(path.dirname(path.realpath(__file__)),
@@ -104,7 +104,7 @@ def update_flac_post(np, thread_url):
             css += line
     message = render_to_string('minos/rendered_thread.html',
                             {'data': serialize_all_data(), 'css': css})
-    post = np.edit_thread(thread_url,
+    post = np.edit_thread(thread_id, post_id,
                 subject.encode('gbk', 'ignore'),
                 message.encode('gbk', 'ignore'))
     return post
@@ -132,9 +132,10 @@ def api_accept_release(request):
 
         # Try to make changes to designated thread
         np = Np(cdb_auth=environ.get('AUTOPOSTER'))
-        thread_url = environ.get('FLACTHREADURL')
+        thread_id = environ.get('FLACTHREADID')
+        post_id = environ.get('FLACPOSTID')
         try:
-            post = update_flac_post(np, thread_url)
+            post = update_flac_post(np, thread_id, post_id)
         except Exception as err:
             logger.warning(err)
             return JsonResponse({'error': '1', 'message': 'Error Posting'}, status=400)

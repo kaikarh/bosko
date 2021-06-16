@@ -192,8 +192,11 @@ CORS_URLS_REGEX = r'^/dsca/api/.*$'
 
 
 REST_FRAMEWORK = {
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.NamespaceVersioning',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 200,
     'DEFAULT_THROTTLE_RATES': {
         'anon': '50/day',
         'user': '1000/day'
-    }
+    },
 }
