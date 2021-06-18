@@ -58,7 +58,7 @@ class AlbumPostCreateView(FormView):
         self.request.session['album_post'] = form.cleaned_data
         return super().form_valid(form)
 
-class ReleaseAlbumPostCreateView(SingleObjectMixin, AlbumPostCreateView):
+class ReleaseAlbumPostCreateView(LoginRequiredMixin, SingleObjectMixin, AlbumPostCreateView):
     model = Release
     template_name = 'postmaker/release_albumpost_create.html'
 
