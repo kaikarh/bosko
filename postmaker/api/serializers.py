@@ -59,7 +59,7 @@ class ReleaseWithaIDSerializer(serializers.Serializer):
     def save(self, **kwargs):
         validated_data = {**self.validated_data, **kwargs}
         release = Release.objects.get(pk=validated_data['pk'])
-        process_new_release(release, a_id=validated_data['a_id'])
+        process_new_release(release, a_id=validated_data['a_id'], forced=True)
         return 'OK'
 
 class ReleaseWithForumPostURLSerializer(serializers.Serializer):
