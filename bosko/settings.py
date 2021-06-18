@@ -188,8 +188,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # cors settings
 CORS_ALLOW_ALL_ORIGINS = True
-CORS_URLS_REGEX = r'^/api/.*$'
-
 
 REST_FRAMEWORK = {
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.NamespaceVersioning',
