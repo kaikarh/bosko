@@ -1,8 +1,6 @@
-from django.db.models.query import QuerySet
 import pytz
 
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
 from django.views.generic import ListView
 from django.utils import timezone
 from django.db.models import Count
@@ -10,7 +8,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from rest_framework import viewsets
 from rest_framework import permissions
-from rest_framework import renderers
 from rest_framework.throttling import AnonRateThrottle
 from rest_framework.generics import CreateAPIView
 
@@ -64,7 +61,6 @@ class DaybookListView(LoginRequiredMixin, ListView):
 class GeneralCreateView(CreateAPIView):
     queryset = Daybook.objects.all()
     serializer_class = DaybookSerializer
-    renderer_classes = [renderers.JSONRenderer]
     throttle_classes = [AnonRateThrottle]
 
 class DaybookViewSet(viewsets.ModelViewSet):

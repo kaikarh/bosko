@@ -1,5 +1,6 @@
 from django.urls import path, re_path, include
 from rest_framework import routers
+from rest_framework.authtoken import views as auth_views
 
 from . import views
 
@@ -25,4 +26,5 @@ urlpatterns = [
     path('np/', include(np_patterns)),
     path('baal/', include(baal_patterns)),
     path('am/', views.AplMusicFetchContentAPIView.as_view()),
+    path('api-token/', auth_views.obtain_auth_token),
 ]

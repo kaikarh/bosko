@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.permissions import IsAuthenticated
 
 from . import serializers
 from postmaker.models import Release
@@ -43,6 +44,7 @@ class ReleaseAPIViewSet(ModelViewSet):
     """
     queryset = Release.objects.all()
     serializer_class = serializers.ReleaseSerializer
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         obj = serializer.save()
