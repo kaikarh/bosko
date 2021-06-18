@@ -15,7 +15,7 @@ document.getElementById("np-login").onclick = () => {
     msg_box.innerText = "";
     
 
-    api_url = "/postmaker/api/np/login";
+    api_url = "/api/np/login/";
     data = {
         "username": document.getElementById("np-username").value,
         "password": document.getElementById("np-password").value
@@ -59,7 +59,7 @@ document.getElementById("np-login").onclick = () => {
 document.getElementById("np-post-thread").onclick = () => {
     var msg_box = document.getElementById("np-message");
     msg_box.innerText = "";
-    api_url = "/postmaker/api/np/post";
+    api_url = "/api/np/post/new/";
     csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
     
     // spin that button
@@ -105,7 +105,7 @@ document.getElementById("np-post-thread").onclick = () => {
 function set_posted(t_url) {
     if (document.getElementById("pk")) {
         var pk = document.getElementById("pk").value;
-        var posted_api_url = "/postmaker/api/set-posted";
+        var posted_api_url = "/api/set-posted/";
         csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         data = {
             "pk": pk,

@@ -15,7 +15,7 @@ function unspinBtn(button, originalText) {
 }
 
 applemusicGetBtn.onclick = () => {
-  let api_url = "/postmaker/api/am";
+  let api_url = "/api/am/";
   let amurl = document.getElementById("id_apple_music_url").value;
   let data = {
     'amurl': amurl

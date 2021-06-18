@@ -32,7 +32,7 @@ class Release(models.Model):
         return '{}'.format(self.release_name.replace('_', ' '))
     
     def get_absolute_url(self):
-        return reverse('postmaker:release_detail', kwargs={'pk': self.pk})
+        return reverse('postmaker:release-detail', kwargs={'pk': self.pk})
 
     def save(self, *args, **kwargs):
         try:

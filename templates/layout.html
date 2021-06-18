@@ -52,7 +52,7 @@
               <a class="nav-link dropdown-toggle {% if request.resolver_match.app_name == 'postmaker' %} active {% endif %}" id="navbarDropdown1" role="button" data-bs-toggle="dropdown" href="#">postmaker</a>
               <ul class="dropdown-menu" aria-labelledby="navbarDropdown1">
                 <li><a class="dropdown-item" href="{% url 'postmaker:albumpost-create' %}">Make</a></li>
-                <li><a class="dropdown-item" href="{% url 'postmaker:release_list' %}">Releases</a></li>
+                <li><a class="dropdown-item" href="{% url 'postmaker:release-list' %}">Releases</a></li>
               </ul>
             </li>
           </ul>

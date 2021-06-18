@@ -1,7 +1,10 @@
 from rest_framework import serializers
 
 from postmaker.models import Release, Link
+from postmaker.postautomation import process_new_release
 from utils.np import Np
+from utils.baal import Baal
+from utils.amParser import Am
 
 class LinkSerializer(serializers.ModelSerializer):
     class Meta:
@@ -39,16 +42,46 @@ class ReleaseSerializer(serializers.ModelSerializer):
         if len(value) > 0: return value
         raise serializers.ValidationError('Must contain at least a link')
 
+class BaalShareLinkCreateSerializer(serializers.Serializer):
+    bduss = serializers.CharField()
+    stoken = serializers.CharField()
+    filename = serializers.CharField()
+
+    def save(self, **kwargs):
+        validated_data = {**self.validated_data, **kwargs}
+        b = Baal({ key: validated_data[key] for key in ('bduss', 'stoken') })
+        return b.generate_link(validated_data['filename'])
+
+class ReleaseWithaIDSerializer(serializers.Serializer):
+    pk = serializers.IntegerField()
+    a_id = serializers.IntegerField()
+
+    def save(self, **kwargs):
+        validated_data = {**self.validated_data, **kwargs}
+        release = Release.objects.get(pk=validated_data['pk'])
+        process_new_release(release, a_id=validated_data['a_id'])
+        return 'OK'
+
+class ReleaseWithForumPostURLSerializer(serializers.Serializer):
+    pk = serializers.IntegerField()
+    url = serializers.URLField(max_length=300)
+
+    def save(self, **kwargs):
+        validated_data = {**self.validated_data, **kwargs}
+        release = Release.objects.get(pk=validated_data['pk'])
+        release.posted = True
+        release.post_url = validated_data['url']
+        release.full_clean()
+        release.save()
+        return 'OK'
+
 class NpAccountSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=32)
     password = serializers.CharField(max_length=32)
 
-    def login(self, **kwargs):
+    def save(self, **kwargs):
         validated_data = {**self.validated_data, **kwargs}
-        try:
-            return Np().login(validated_data).get_dict()
-        except:
-            return None
+        return Np().login(validated_data).get_dict()
 
 class NpCreateThreadSerializer(serializers.Serializer):
     cdb_auth = serializers.CharField()
@@ -57,7 +90,7 @@ class NpCreateThreadSerializer(serializers.Serializer):
     forum_id = serializers.CharField(max_length=4, default='45')
     typeid = serializers.CharField(max_length=4, required=False)
 
-    def post_thread(self, **kwargs):
+    def save(self, **kwargs):
         validated_data = {**self.validated_data, **kwargs}
         np = Np(cdb_auth=validated_data['cdb_auth'])
 
@@ -74,7 +107,7 @@ class NpEditThreadSerializer(NpCreateThreadSerializer):
     thread_id = serializers.CharField()
     post_id = serializers.CharField()
 
-    def post_thread(self, **kwargs):
+    def save(self, **kwargs):
         validated_data = {**self.validated_data, **kwargs}
         np = Np(cdb_auth=validated_data['cdb_auth'])
 
@@ -86,3 +119,11 @@ class NpEditThreadSerializer(NpCreateThreadSerializer):
         )
 
         return post
+
+class AplMusicSerializer(serializers.Serializer):
+    amurl = serializers.URLField(max_length=300)
+    def save(self, **kwargs):
+        validated_data = {**self.validated_data, **kwargs}
+        return_data = Am(validated_data['amurl']).get_album_info()
+        return_data.update(tracklist=[ track.replace(',', ' ') for track in return_data['tracklist'] ])
+        return return_data

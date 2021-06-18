@@ -46,7 +46,7 @@
   var infoBox = document.getElementsByClassName("card-header")[0];
 
   postButton.onclick = () => {
-    let api_url = "/postmaker/api/post-with-id";
+    let api_url = "/api/np/post-with-id/";
     let pk = document.getElementById("pk").value;
     let a_id = document.getElementById("adamIDInput").value;
     let token = document.querySelector('[name=csrfmiddlewaretoken]').value;

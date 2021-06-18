@@ -27,7 +27,7 @@ def process_new_release(release, a_id=None, forced=False, cdb_auth=None):
         posted = post_to_forum(**post_params, cdb_auth=cdb_auth)
     except Exception as err:
         release.autopost_alert = err
-        logger.warning('Auto post error: {}'.format(err))
+        raise Exception('Auto post error: {}'.format(err))
     finally:
         if 'posted' in locals():
             release.post_url = posted
@@ -56,7 +56,13 @@ def validity_check(release, a_id=None, forced=False):
 
     # All Clear!
     release.adam_id = a_id
-    logger.info('Release {} match {}\nclear for autopost!'.format({release.release_name}, a_id))
+    logger.info(
+        'Release ->{}<- matched {}\nclear to {}autopost!'.format(
+            release.release_name,
+            a_id,
+            'Forced ' if forced else ''
+        )
+    )
     return tonos
 
 def generate_albumpost(release, a_id=None, tonos=None):

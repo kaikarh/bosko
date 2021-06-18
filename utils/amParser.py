@@ -43,7 +43,7 @@ class Am:
 
             return info
 
-        return {"error": True}
+        raise Exception('Error parsing')
 
     def get_dummy_info(self):
         return {'title': 'After Hours', 'artist': 'The Weeknd', 'meta': ['R&B/Soul', '2020'], 'tracklist': ['Alone Again', 'Too Late', 'Hardest To Love', 'Scared To Live', 'Snowchild', 'Escape From LA', 'Heartless', 'Faith', 'Blinding Lights', 'In Your Eyes', 'Save Your Tears', 'Repeat After Me (Interlude)', 'After Hours', 'Until I Bleed Out'], 'art': 'https://is2-ssl.mzstatic.com/image/thumb/Music124/v4/06/e5/8c/06e58ce4-a813-8d5b-ef64-03a69064773c/20UMGIM12176.rgb.jpg/500x500bb-60.jpg'}

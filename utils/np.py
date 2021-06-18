@@ -114,9 +114,12 @@ class Np:
             res = self.__post_page(parse.urljoin(self.login_url, login_form.attrs['action']), data=payload)
             #res = self.s.post(parse.urljoin(self.login_url, login_form.attrs['action']), data=payload)
 
-            return res.cookies
+            if res.cookies.get('cdb_auth'):
+                return res.cookies
+            else:
+                raise Exception('Login Failed')
         else:
-            return False
+            raise Exception('Login Failed')
 
     def set_user(self, cookies=None, cdb_auth=None):
         # set user credential to cookie

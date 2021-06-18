@@ -188,13 +188,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # cors settings
 CORS_ALLOW_ALL_ORIGINS = True
-CORS_URLS_REGEX = r'^/dsca/api/.*$'
+CORS_URLS_REGEX = r'^/api/.*$'
 
 
 REST_FRAMEWORK = {
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.NamespaceVersioning',
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 200,
+    'PAGE_SIZE': 50,
     'DEFAULT_THROTTLE_RATES': {
         'anon': '50/day',
         'user': '1000/day'

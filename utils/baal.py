@@ -138,14 +138,13 @@ class Baal:
         r = self.s.post(url, params=params, data=form)
 
         resp_json = r.json()
-
         if resp_json['errno'] == 0:
             return {
                 'link': resp_json['link'],
                 'pwd': pwd
             }
         else:
-            return False
+            raise Exception('Error getting share link - {}'.format(resp_json.get('show_msg')))
 
 
 

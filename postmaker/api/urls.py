@@ -13,8 +13,16 @@ np_patterns = [
         views.NpPostActionAPIView.as_view(),
         name='np-api-post-action'
     ),
+    path('post-with-id/', views.NpPostReleaseWithaIDAPIView.as_view()),
+    path('set-posted/', views.NpSetReleaseAsPostedAPIView.as_view()),
+]
+
+baal_patterns = [
+    path('share/', views.BaalCreateShareLinkAPIView.as_view()),
 ]
 
 urlpatterns = [
     path('np/', include(np_patterns)),
+    path('baal/', include(baal_patterns)),
+    path('am/', views.AplMusicFetchContentAPIView.as_view()),
 ]

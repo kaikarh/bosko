@@ -10,9 +10,9 @@ Releases | {{ block.super }}
 <div class="container mt-5 pt-5">
   <h1>Release List</h1>
   <div class="mt-3">
-    <a class="btn btn-outline-dark" href="{% url 'postmaker:release_list' %}" role="button">All</a>
-    <a class="btn btn-outline-dark ms-3" href="{% url 'postmaker:release_list_type_filtered' 'mp3' %}" role="button">MP3</a>
-    <a class="btn btn-outline-dark ms-3" href="{% url 'postmaker:release_list_type_filtered' 'flac' %}" role="button">FLAC</a>
+    <a class="btn btn-outline-dark" href="{% url 'postmaker:release-list' %}" role="button">All</a>
+    <a class="btn btn-outline-dark ms-3" href="{% url 'postmaker:release-list-type-filtered' 'mp3' %}" role="button">MP3</a>
+    <a class="btn btn-outline-dark ms-3" href="{% url 'postmaker:release-list-type-filtered' 'flac' %}" role="button">FLAC</a>
   </div>
 
   <nav aria-label="Page navigation">
@@ -64,7 +64,7 @@ Releases | {{ block.super }}
             {{ r.time|timesince }}
           </td>
           <td>
-            <a href="{% url 'postmaker:release_detail' r.pk %}">
+            <a href="{% url 'postmaker:release-detail' r.pk %}">
               {{ r }}
             </a>
           </td>
