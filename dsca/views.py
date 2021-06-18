@@ -3,7 +3,7 @@ import pytz
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from django.views import generic
+from django.views.generic import ListView
 from django.utils import timezone
 from django.db.models import Count
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -16,7 +16,7 @@ from rest_framework.generics import CreateAPIView
 
 from .serializers import DaybookSerializer
 from .models import Daybook
-from postmaker.models import Release
+from postmaker.models import Link
 
 # Create your views here.
 
@@ -36,20 +36,16 @@ def index(request):
     
     return render(request, 'dsca/dash.html', {'stats': data})
 
-class ListAllView(LoginRequiredMixin, generic.ListView):
+class DaybookListView(LoginRequiredMixin, ListView):
     model = Daybook
-    queryset = Daybook.objects.all().order_by('-time')[:300]
-    template_name = 'dsca/list-all.html'
+    paginate_by = 300
     extra_context = {'timezones': pytz.common_timezones}
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        for record in context['object_list']:
-            try:
-                release = Release.objects.filter(share_link=record.destination)[0]
-                record.release_name = release.release_name
-            except Exception:
-                continue
+        for obj in context['object_list']:
+            if link := Link.objects.filter(url=obj.destination).first():
+                obj.release_name = link.release.release_name
         return context
 
     def get(self, request, *args, **kwargs):

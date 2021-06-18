@@ -52,7 +52,7 @@ def validity_check(release, a_id=None, forced=False):
         if dupe := chk_rls_dup(a_id):
             raise Exception(f'Duplication: {dupe}')
         if not chk_validity(tonos):
-            raise Exception('Search Result Validation Failed')
+            raise Exception('Search Result Validation Failed - search return: {}'.format(a_id))
 
     # All Clear!
     release.adam_id = a_id

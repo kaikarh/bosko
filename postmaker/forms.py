@@ -102,8 +102,7 @@ class ReleaseForm(BootstrapStyledForm):
     class Meta:
         model = Release
         fields = ['release_name', 'archive_name', 'archive_size',
-                  'stream_song_name', 'stream_song_url', 'share_link',
-                  'share_link_passcode', 'adam_id',  'posted', 'post_url']
+                  'stream_song_name', 'stream_song_url', 'adam_id',  'posted', 'post_url']
 
 class AlbumPostForm(BootstrapStyledForm):
     release_date = forms.CharField(required=False)

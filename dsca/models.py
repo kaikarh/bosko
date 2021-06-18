@@ -9,3 +9,4 @@ class Daybook(models.Model):
     destination = models.URLField()
     class Meta:
         unique_together = ["time", "origin"]
+        ordering = ['-time']

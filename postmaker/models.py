@@ -14,8 +14,6 @@ class Release(models.Model):
     archive_size = models.IntegerField(blank=True, default=0)
     stream_song_name = models.CharField(max_length=200, blank=True)
     stream_song_url = models.URLField(blank=True)
-    share_link = models.URLField(blank=True)
-    share_link_passcode = models.CharField(max_length=4, blank=True)
     adam_id = models.CharField(max_length=64, blank=True)
     lang = models.CharField(max_length=2, blank=True)
     coding = models.CharField(max_length=4, blank=True)

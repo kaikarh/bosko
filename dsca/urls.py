@@ -9,6 +9,6 @@ router.register(r'daybook', views.DaybookViewSet)
 app_name = "dsca"
 urlpatterns = [
     path('', views.index, name='index'),
-    path('list-all/', views.ListAllView.as_view(), name='listall'),
+    path('daybook/', views.DaybookListView.as_view(), name='daybook-list'),
     path('api/c', views.GeneralCreateView.as_view()),
 ]
