@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from postmaker.models import Release, Link
-from postmaker.postautomation import process_new_release
+from postmaker.postautomation import autopost
 from utils.np import Np
 from utils.baal import Baal
 from utils.amParser import Am
@@ -59,7 +59,7 @@ class ReleaseWithaIDSerializer(serializers.Serializer):
     def save(self, **kwargs):
         validated_data = {**self.validated_data, **kwargs}
         release = Release.objects.get(pk=validated_data['pk'])
-        process_new_release(release, a_id=validated_data['a_id'], forced=True)
+        autopost(release, a_id=validated_data['a_id'], forced=True)
         return 'OK'
 
 class ReleaseWithForumPostURLSerializer(serializers.Serializer):

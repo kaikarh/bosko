@@ -19,7 +19,13 @@ def new_release_entry(release):
     except Exception as err:
         logger.warning('Spawning release process failed: {}'.format(err))
 
-def process_new_release(release, a_id=None, forced=False, cdb_auth=None):
+def process_new_release(release):
+    try:
+        autopost(release)
+    except Exception as err:
+        logger.warning(err)
+
+def autopost(release, a_id=None, forced=False, cdb_auth=None):
     try:
         t = validity_check(release, a_id=a_id, forced=forced)
         albumpost = generate_albumpost(release, tonos=t)

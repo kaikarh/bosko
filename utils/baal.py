@@ -6,7 +6,6 @@ import requests, re, logging, random, string
 from urllib.parse import urljoin
 from os import path as Path
 
-#logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class Baal:

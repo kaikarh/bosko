@@ -149,31 +149,42 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
         },
     },
-    'root': {
-        'handlers': ['console'],
-        'level': 'WARNING',
+    'handlers': {
+        'debug_console': {
+            'class': 'logging.StreamHandler',
+            'filters': ['require_debug_true'],
+            'level': 'DEBUG',
+        },
+        'production_warning': {
+            'class': 'logging.StreamHandler',
+            'filters': ['require_debug_false'],
+            'level': 'WARNING',
+        },
     },
     'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
-            'propagate': False,
-        },
         'dsca': {
-            'handlers': ['console'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'handlers': ['debug_console', 'production_warning'],
+            'level': 'DEBUG',
             'propagate': False,
         },
         'postmaker': {
-            'handlers': ['console'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'handlers': ['debug_console', 'production_warning'],
+            'level': 'DEBUG',
             'propagate': False,
         },
+        'utils': {
+            'handlers': ['debug_console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        }
     },
 }
 
