@@ -105,7 +105,7 @@ document.getElementById("np-post-thread").onclick = () => {
 function set_posted(t_url) {
     if (document.getElementById("pk")) {
         var pk = document.getElementById("pk").value;
-        var posted_api_url = "/api/set-posted/";
+        var posted_api_url = "/api/np/set-posted/";
         csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         data = {
             "pk": pk,
