@@ -18,16 +18,15 @@ from django.urls import include, path
 
 from rest_framework.routers import SimpleRouter
 
-from dsca.urls import router as dsca_router
 from postmaker.api.urls import router as postmaker_router
 
 router = SimpleRouter()
-router.registry.extend(dsca_router.registry)
 router.registry.extend(postmaker_router.registry)
 
 api_urls = [
     path('', include(router.urls)),
     path('', include('postmaker.api.urls')),
+    path('', include('dsca.api.urls')),
 ]
 
 urlpatterns = [

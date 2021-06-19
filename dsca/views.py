@@ -6,13 +6,7 @@ from django.utils import timezone
 from django.db.models import Count
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from rest_framework import viewsets
-from rest_framework import permissions
-from rest_framework.throttling import AnonRateThrottle
-from rest_framework.generics import CreateAPIView
-
-from .serializers import DaybookSerializer
-from .models import Daybook
+from .models import LinkClickedEntry
 from postmaker.models import Link
 
 # Create your views here.
@@ -20,12 +14,12 @@ from postmaker.models import Link
 def index(request):
     data = {}
 
-    total = len(Daybook.objects.all())
+    total = len(LinkClickedEntry.objects.all())
     data['total'] = total
 
-    daily_count = Daybook.objects.values('time__date').annotate(dcount=Count('time__date')).order_by('-time__date')
-    country_count = Daybook.objects.values('country').annotate(ccount=Count('country')).order_by('-ccount')
-    file_count = Daybook.objects.values('destination').annotate(fcount=Count('destination')).order_by('-fcount')
+    daily_count = LinkClickedEntry.objects.values('time__date').annotate(dcount=Count('time__date')).order_by('-time__date')
+    country_count = LinkClickedEntry.objects.values('country').annotate(ccount=Count('country')).order_by('-ccount')
+    file_count = LinkClickedEntry.objects.values('destination').annotate(fcount=Count('destination')).order_by('-fcount')
 
     data['daily_count'] = daily_count[:30]
     data['country_count'] = country_count
@@ -33,8 +27,8 @@ def index(request):
     
     return render(request, 'dsca/dash.html', {'stats': data})
 
-class DaybookListView(LoginRequiredMixin, ListView):
-    model = Daybook
+class LinkClickedEntryListView(LoginRequiredMixin, ListView):
+    model = LinkClickedEntry
     paginate_by = 300
     extra_context = {'timezones': pytz.common_timezones}
 
@@ -57,14 +51,3 @@ class DaybookListView(LoginRequiredMixin, ListView):
     def post(self, request, *args, **kwargs):
         request.session['django_timezone'] = request.POST['timezone']
         return redirect('.')
-
-class GeneralCreateView(CreateAPIView):
-    queryset = Daybook.objects.all()
-    serializer_class = DaybookSerializer
-    throttle_classes = [AnonRateThrottle]
-
-class DaybookViewSet(viewsets.ModelViewSet):
-    queryset = Daybook.objects.all()
-    serializer_class = DaybookSerializer
-    permission_classes = [permissions.IsAdminUser]
-

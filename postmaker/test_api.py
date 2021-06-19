@@ -9,7 +9,7 @@ from .models import Release
 # Create your tests here.
 
 class ReleaseAPICreateTests(APITestCase):
-    url = url = reverse('v1:release-list')
+    url = reverse('v1:release-list')
 
     @classmethod
     def setUp(self):
