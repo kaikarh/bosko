@@ -12,7 +12,8 @@ class LinkClickedEntrySerializer(serializers.ModelSerializer):
         try:
             if x_forwarded_for := self.context['request'].headers.get('X-Forwarded-For'):
                 validated_data.update(origin=x_forwarded_for.split(',')[0])
-            validated_data.update(origin=self.context['request'].META['REMOTE_ADDR'])
+            else:
+                validated_data.update(origin=self.context['request'].META['REMOTE_ADDR'])
             validated_data.update(user_agent=self.context['request'].headers.get('User-Agent', ''))
         except KeyError:
             # create is not coming from a http request
