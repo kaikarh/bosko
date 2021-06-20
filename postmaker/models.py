@@ -102,7 +102,7 @@ class AlbumPost(models.Model):
             self.artist_name,
             self.collection_name,
             ' ({})'.format(self.release_date.year) if self.release_date else '',
-            ' [{}]'.format(self.lang) if self.lang else ''
+            ' [{}]'.format(self.collection_language) if self.collection_language else ''
         )
 
     def clean(self):
