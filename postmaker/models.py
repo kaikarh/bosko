@@ -98,10 +98,11 @@ class AlbumPost(models.Model):
         managed = False
 
     def __str__(self):
-        return '{} - {}{}'.format(
+        return '{} - {}{}{}'.format(
             self.artist_name,
             self.collection_name,
-            ' ({})'.format(self.release_date.year) if self.release_date else ''
+            ' ({})'.format(self.release_date.year) if self.release_date else '',
+            ' [{}]'.format(self.lang) if self.lang else ''
         )
 
     def clean(self):

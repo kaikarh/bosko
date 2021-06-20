@@ -110,10 +110,7 @@ def post_to_forum(subject, body, forum_id, typeid, cdb_auth=None):
     # retry if failed
     for attempt in range(3):
         try:
-            post = np.post_thread(subject.encode('gbk', 'ignore'),
-                        body.encode('gbk', 'ignore'),
-                        forum_id=forum_id,
-                        typeid=typeid)
+            post = np.post_thread(subject, body, forum_id=forum_id, typeid=typeid)
             return post.get('url', '')
         except Exception as err:
             logger.warning('Post Failed attempt {}/3: \n - {}'.format(attempt+1, err))
@@ -125,8 +122,7 @@ def generate_forum_post_field_value(albumpost):
     typeid = get_typeid(albumpost, forum_id)
 
     # subject word limit
-    subject = str(albumpost) if len(str(albumpost)) < Np.POST_TITLE_MAX else \
-        str(albumpost)[:Np.POST_TITLE_MAX-3] + '.' * 3
+    subject = str(albumpost)
     body = albumpost.render_post()
 
     return {'subject': subject, 'body': body, 'forum_id': forum_id, 'typeid': typeid}

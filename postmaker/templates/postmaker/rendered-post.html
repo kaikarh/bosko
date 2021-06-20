@@ -12,7 +12,7 @@
           <div class="album-header-meta">
             <h1 class="album-title">{{ album.collection_name }}</h1>
             <h2 class="album-artist">{{ album.artist_name }}</h2>
-            <h3 class="album-meta-info">{{ album.genre_name|upper }} &#8226; {{ album.release_date }}</h3>
+            <h3 class="album-meta-info">{{ album.genre_name|upper }} • {{ album.release_date }}</h3>
           </div>
           <div class="album-notes">
             <div class="description-container">
@@ -54,10 +54,10 @@
 
           <div class="release-stat-container">
             {% if album.rip_source == 'unknown' or not album.rip_source %}
-              UNKNOWN / P2P
+              UNKNOWN • P2P
             {% else %}
-              SCENE /
-              {{ album.rip_source|upper }} /
+              SCENE •
+              {{ album.rip_source|upper }} •
               {{ album.coding|upper }}
               {% if album.coding == 'mp3' %}
                 {% if album.rip_source == 'web' %}
@@ -70,8 +70,8 @@
           </div>
           <div class="release-footnotes">
             {% if album.archive_size %}
-              ZIP / PASSWORD PROTECTED
-              / {{ album.archive_size|filesizeformat }}
+              ZIP • PASSWORD PROTECTED •
+              {{ album.archive_size|filesizeformat }}
             {% endif %}
           </div>
           {% for item in album.miscellaneous %}

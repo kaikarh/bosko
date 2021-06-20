@@ -3,7 +3,7 @@
 # need an account
 
 from os import environ
-import bs4, requests, logging
+import bs4, requests, logging, html
 
 from urllib import parse
 
@@ -81,6 +81,13 @@ class Np:
             selected = form.find('option', selected=True)
             result['typeid'] = selected.attrs['value']
         return result
+
+    def _trim_subject(self, s):
+        # subject line has a character word count limit
+        # html characters are counted as escaped html entity i.e. & -> &amps;
+        s_len = len(html.escape(s))
+        diff = s_len - len(s)
+        return s if s_len < self.POST_TITLE_MAX else s[:self.POST_TITLE_MAX - diff - 3] + '.' * 3
 
     def login(self, account):
         # Login to forum
@@ -169,8 +176,8 @@ class Np:
         fields = self.__get_all_fields_in_form(form)
         
         # Plug in new content
-        fields['subject'] = subject
-        fields['message'] = message
+        fields['subject'] = self._trim_subject(subject).encode('gbk', 'ignore')
+        fields['message'] = message.encode('ascii', 'xmlcharrefreplace')
         submit_url = parse.urljoin(self.host_url, form.attrs['action'])
         res = self.__post_page(submit_url, data=fields)
 
@@ -191,8 +198,8 @@ class Np:
         payload['htmlon'] = 1
         payload['usesig'] = 1
         payload['wysiwyg'] = 0
-        payload['subject'] = subject
-        payload['message'] = message
+        payload['subject'] = self._trim_subject(subject).encode('gbk', 'ignore')
+        payload['message'] = message.encode('ascii', 'xmlcharrefreplace')
         payload['typeid'] = typeid
 
         # get formhash

@@ -95,8 +95,8 @@ class NpCreateThreadSerializer(serializers.Serializer):
         np = Np(cdb_auth=validated_data['cdb_auth'])
 
         post = np.post_thread(
-            validated_data.get('subject').encode('gbk', 'ignore'),
-            validated_data.get('message').encode('gbk', 'ignore'),
+            validated_data.get('subject'),
+            validated_data.get('message'),
             forum_id=validated_data.get('forum_id'),
             typeid=validated_data.get('typeid')
         )
@@ -114,8 +114,8 @@ class NpEditThreadSerializer(NpCreateThreadSerializer):
         post = np.edit_thread(
             thread_id=validated_data.get('thread_id'),
             post_id=validated_data.get('post_id'),
-            subject=validated_data.get('subject').encode('gbk', 'ignore'),
-            message=validated_data.get('message').encode('gbk', 'ignore'),
+            subject=validated_data.get('subject'),
+            message=validated_data.get('message'),
         )
 
         return post
