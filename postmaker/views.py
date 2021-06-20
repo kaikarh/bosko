@@ -91,6 +91,7 @@ class AlbumPostResultView(TemplateView):
         context['rendered_post'] = album_post.render_post()
         context['meta'] = {
             'accounts': self.request.session.get('np_accounts'),
-            'subject': album_post
+            'subject': album_post,
+            'release_pk': album_post.release_pk,
         }
         return context

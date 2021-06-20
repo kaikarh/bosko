@@ -16,6 +16,9 @@ Done making! | {{ block.super }}
             <div class="row">
                 <div class="col-md-6">
                     {% csrf_token %}
+                    {% if meta.release_pk %}
+                        <input type="hidden" id="pk" name="pk" value="{{ meta.release_pk }}">
+                    {% endif %}
                     <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">

@@ -1,5 +1,4 @@
 from os import path
-import re
 import datetime
 
 from django.db import models
@@ -58,7 +57,8 @@ class Release(models.Model):
             'rip_source': r.source,
             'download_links': list(self.link_set.values('url', 'passcode')),
             'coding': self.coding,
-            'collection_language': self.lang
+            'collection_language': self.lang,
+            'release_pk': self.pk
         }
 
 class Link(models.Model):
@@ -77,6 +77,7 @@ class AlbumPost(models.Model):
     release_date = models.DateField(blank=True)
     notes = models.TextField(blank=True)
     collection_language = models.CharField(max_length=2, blank=True)
+    release_pk = models.CharField(max_length=32, blank=True)
     lq_stream_url = models.URLField(blank=True)
     archive_size = models.IntegerField(blank=True, default=0)
     rip_source = models.CharField(

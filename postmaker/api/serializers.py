@@ -71,6 +71,7 @@ class ReleaseWithForumPostURLSerializer(serializers.Serializer):
         release = Release.objects.get(pk=validated_data['pk'])
         release.posted = True
         release.post_url = validated_data['url']
+        release.autopost_alert = ''
         release.full_clean()
         release.save()
         return 'OK'
