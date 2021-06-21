@@ -22,14 +22,16 @@ class ReleaseList(ListView):
     paginate_by = 300
 
     def get_queryset(self):
+        base_set = ''
         if self.kwargs.get('type'):
             if self.kwargs['type'].upper() == 'MP3':
-                return Release.objects.exclude(release_name__contains='FLAC-')
+                base_set =  Release.objects.exclude(release_name__contains='FLAC-')
             elif self.kwargs['type'].upper() == 'FLAC':
-                return Release.objects.filter(release_name__contains='FLAC-')
+                base_set =  Release.objects.filter(release_name__contains='FLAC-')
             else:
                 raise Http404
-        return Release.objects.all()
+        if not base_set: base_set = Release.objects.all()
+        return base_set.filter(release_name__icontains=self.request.GET.get('query', ''))
 
 class ReleaseDetailView(LoginRequiredMixin, DetailView):
     model = Release
