@@ -25,7 +25,7 @@ class Tonos:
 
     def get_album_data(self):
         return self.data['album_info'].copy()
-    
+
     def get_parsed_data(self):
         return self.data['parsed_rls']
 
@@ -75,7 +75,7 @@ class Tonos:
             data['collection_name'] = album['collectionName']
             data['artwork_url'] = album['artworkUrl100']
             data['genre_name'] = album['primaryGenreName']
-            data['copyright'] = album['copyright']
+            data['copyright'] = album.get(copyright, '')
             data['release_date'] = album['releaseDate']
             data['apple_music_url'] = album['collectionViewUrl']
             data['tracks'] = []
