@@ -148,14 +148,11 @@ def get_forum_id(albumpost):
         forum_id = 86
     if 'Classical' in genre:
         forum_id = 34
-    if 'K-Pop' in genre or 'J-Pop' in genre:
-        forum_id = 59
 
     # if number of track is less than 3 it's a singles release
     if forum_id == 45:
         if 0 < num_of_tracks <= 3:
             forum_id = 12
-    
     return forum_id
 
 def get_typeid(albumpost, forum_id):
@@ -193,7 +190,6 @@ def get_typeid(albumpost, forum_id):
             typeid = 67
         if 3 < num_of_tracks <= 6:
             typeid = 68
-    
     return typeid
 
 def chk_validity(tonos):
