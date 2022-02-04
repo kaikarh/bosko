@@ -95,7 +95,7 @@ class NpCreateThreadSerializer(serializers.Serializer):
         validated_data = {**self.validated_data, **kwargs}
         np = Np(cdb_auth=validated_data['cdb_auth'])
 
-        post = np.post_thread(
+        post = np.new_thread(
             validated_data.get('subject'),
             validated_data.get('message'),
             forum_id=validated_data.get('forum_id'),

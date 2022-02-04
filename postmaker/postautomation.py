@@ -110,7 +110,7 @@ def post_to_forum(subject, body, forum_id, typeid, cdb_auth=None):
     # retry if failed
     for attempt in range(3):
         try:
-            post = np.post_thread(subject, body, forum_id=forum_id, typeid=typeid)
+            post = np.new_thread(subject, body, forum_id=forum_id, typeid=typeid)
             return post.get('url', '')
         except Exception as err:
             logger.warning('Post Failed attempt {}/3: \n - {}'.format(attempt+1, err))

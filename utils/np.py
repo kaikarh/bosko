@@ -18,8 +18,10 @@ class Np:
         # setup the session connection
         self.host_url = 'http://needpop.com'
         self.login_url = parse.urljoin(self.host_url, '/logging.php?action=login')
-        self.compose_url_base = parse.urljoin(self.host_url,
-                                '/post.php?action=newthread&fid={}&extra=page%3D1')
+        self.newthread_url_base = parse.urljoin(self.host_url,
+                                '/post.php?action=newthread&fid={}')
+        self.reply_url_base = parse.urljoin(self.host_url,
+                                '/post.php?action=reply&tid={}')
         self.edit_url_base = parse.urljoin(self.host_url,
                                 '/post.php?action=edit&tid={}&pid={}')
         self.s = requests.Session()
@@ -27,6 +29,9 @@ class Np:
 
         if cdb_auth:
             self.set_user(cdb_auth=cdb_auth)
+
+    def __del__(self):
+        self.s.close()
 
     def __get_page(self, url):
         # try to make the request
@@ -45,12 +50,8 @@ class Np:
         return ''
 
     def __post_page(self, url, *args, **kwargs):
-        try:
-            res = self.s.post(url, *args, **kwargs)
-            res.encoding = 'GBK'
-        except:
-            # something went wrong returning an empty string
-            res = ''
+        res = self.s.post(url, *args, **kwargs)
+        res.encoding = 'GBK'
         return res
 
     def __post_page_and_parse(self, url, *args, **kwargs):
@@ -79,7 +80,7 @@ class Np:
         typeid_select = form.find('select', {'name': 'typeid'})
         if typeid_select:
             selected = form.find('option', selected=True)
-            result['typeid'] = selected.attrs['value']
+            result['typeid'] = selected.attrs['value'] if selected else 0
         return result
 
     def _trim_subject(self, s):
@@ -88,6 +89,12 @@ class Np:
         s_len = len(html.escape(s))
         diff = s_len - len(s)
         return s if s_len < self.POST_TITLE_MAX else s[:self.POST_TITLE_MAX - diff - 3] + '.' * 3
+
+    def __trim_str_to_len(self, s, max_len, oversized=False):
+        if len(html.escape(s)
+        .encode('gbk', 'xmlcharrefreplace')) <= max_len:
+            return s[:-2] + '…' if oversized else s
+        return self.__trim_str_to_len(s[:-1], max_len, True)
 
     def login(self, account):
         # Login to forum
@@ -165,49 +172,45 @@ class Np:
         # logout
         return (self.__get_page(parse.urljoin(self.host_url, logout_button.attrs['href']))).cookies
 
-    def edit_thread(self, thread_id, post_id, subject, message):
-        #soup = self.__get_page_and_parse(thread_url)
-        # Look for the edit button and get the compose url
-        #compose_url = parse.urljoin(self.host_url, soup.find('a', text='编辑').attrs['href'])
+    def __post(self, action, subject, message, thread_id=None, post_id=None, forum_id=None, **kwargs):
+        if action == 'edit':
+            compose_url = self.edit_url_base.format(thread_id, post_id)
+        elif action == 'reply':
+            compose_url = self.reply_url_base.format(thread_id)
+        elif action == 'create':
+            compose_url = self.newthread_url_base.format(forum_id)
+        else:
+            raise Exception('Post Action Unknown: %s', action)
 
-        compose_url = self.edit_url_base.format(thread_id, post_id)
         soup = self.__get_page_and_parse(compose_url)
         form = soup.find('form')
         fields = self.__get_all_fields_in_form(form)
-        
-        # Plug in new content
-        fields['subject'] = self._trim_subject(subject).encode('gbk', 'ignore')
-        fields['message'] = message.encode('ascii', 'xmlcharrefreplace')
+        fields.update(kwargs)
+        fields.update({
+            'subject': self.__trim_str_to_len(
+                subject, self.POST_TITLE_MAX).encode('gbk', 'xmlcharrefreplace'),
+            'message': message.encode('ascii', 'xmlcharrefreplace'),
+        })
         submit_url = parse.urljoin(self.host_url, form.attrs['action'])
-        res = self.__post_page(submit_url, data=fields)
+        return self.__post_page(submit_url, data=fields)
+
+    def edit_thread(self, thread_id, post_id, subject, message):
+        res = self.__post('edit', subject, message, thread_id=thread_id, post_id=post_id)
 
         return {'url': res.url}
 
 
-    def post_thread(self, subject, message, forum_id=45, typeid=None):
-        payload = {}
+    def new_thread(self, subject, message, forum_id=45, typeid=None, price=0, readperm=0):
+        post_pref = {
+            'parseurloff': 1,
+            'htmlon': 1,
+            'usesig': 1,
+            'price': price,
+            'readperm': readperm,
+            'typeid': typeid,
+        }
 
-        # construct payload
-        # common fields
-        payload['isblog'] = None
-        payload['frombbs'] = 1
-        payload['readperm'] = 0
-        payload['price'] = 0
-        payload['iconid'] = 0
-        payload['parseurloff'] = 1
-        payload['htmlon'] = 1
-        payload['usesig'] = 1
-        payload['wysiwyg'] = 0
-        payload['subject'] = self._trim_subject(subject).encode('gbk', 'ignore')
-        payload['message'] = message.encode('ascii', 'xmlcharrefreplace')
-        payload['typeid'] = typeid
-
-        # get formhash
-        compose_url = self.compose_url_base.format(forum_id)
-        compose_page = self.__get_page_and_parse(compose_url)
-        payload['formhash'] = compose_page.form.find('input', attrs={'name': 'formhash'}).attrs['value']
-        submit_url = parse.urljoin(self.host_url, compose_page.form.attrs['action'])
-        res = self.__post_page(submit_url, data=payload)
+        res = self.__post('create', subject, message, forum_id=forum_id, **post_pref)
 
         view_page = bs4.BeautifulSoup(res.text, 'html.parser')
 
