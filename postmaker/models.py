@@ -7,6 +7,18 @@ from django.template.loader import render_to_string
 
 from utils.releaseparser import ReleaseParser
 
+class Album(models.Model):
+    artist = models.CharField(max_length=256)
+    title = models.CharField(max_length=256)
+    genre = models.CharField(max_length=32, default='Unknown')
+    adam_id = models.CharField(max_length=64, blank=True)
+    cover_art = models.URLField(
+        default='https://a.radikal.ru/a41/2104/ec/b998218537aa.png')
+    date = models.DateField()
+
+    def __str__(self):
+        return '{} - {}'.format(self.artist, self.title)
+
 class Release(models.Model):
     release_name = models.CharField(max_length=200, unique=True)
     archive_name = models.CharField(max_length=200)
@@ -21,6 +33,12 @@ class Release(models.Model):
     post_url = models.URLField(blank=True)
     autopost_alert = models.TextField(blank=True)
     time = models.DateTimeField(auto_now_add=True)
+    album = models.ForeignKey(
+        Album,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL
+    )
 
     class Meta:
         ordering = ['-time']

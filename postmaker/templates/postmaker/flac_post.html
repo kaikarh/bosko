@@ -1,0 +1,168 @@
+<div class="thread-content">
+    <div class="thread-inner">
+        <h1 class="center-self">FLAC 無損音樂索引</h1>
+        <div class="list-control center-self">
+            <input type="text" id="searchInput" placeholder="搜尋">
+        </div>
+
+        <div class="gallery-wrap center-self">
+            <ul id="gallery" class="gallery">
+            </ul>
+        </div>
+    </div>
+    <div class="misc">
+    </div>
+
+    <div id="downloadModal" class="download-modal">
+        <div class="download-modal-content">
+            <div class="download-modal-header">
+                <h1 class="download-modal-title">載點</h1>
+                <span class="download-modal-close">×</span>
+            </div>
+            <div class="download-modal-body">
+            </div>
+            <div class="download-modal-footer"></div>
+        </div>
+    </div>
+
+</div>
+
+{{ data|json_script:"data-elem" }}
+{{ css|json_script:"css-src" }}
+<script>
+    const data = JSON.parse(document.getElementById('data-elem').textContent);
+    let g = document.getElementById("gallery");
+    var dlModal = document.getElementById("downloadModal");
+
+    function populateDownloadModal(modal, index) {
+        for (let x=0; x<data[index].release_set.length; x++) {
+            let segment = document.createElement("div");
+            segment.classList = ["segment"];
+            segment.innerHTML = "<div class=\"release-meta\"><h3></h3></div>"
+            let title = segment.querySelector(".release-meta h3");
+            title.innerText = data[index].release_set[x].release_name.replace(/\_/g, ' ');
+            
+            for (let y=0; y<data[index].release_set[x].link_set.length; y++) {
+                let linkDiv = document.createElement("div");
+                linkDiv.classList = ["download-link"];
+                linkDiv.innerHTML = "<a href=\"#a\"></a><div class=\"link-passcode\"></div>";
+                linkDiv.querySelector("a").innerText = data[index].release_set[x].link_set[y].url;
+                linkDiv.querySelector("a").addEventListener('click', handleAElemClick, false);
+                linkDiv.querySelector(".link-passcode").innerText = data[index].release_set[x].link_set[y].passcode;
+                segment.appendChild(linkDiv);
+            }
+            modal.querySelector(".download-modal-body").appendChild(segment);
+        }
+    }
+
+    function handleAElemClick(e) {
+        console.log(e.target);
+        e.target.id = 'download-link';
+        window.open(e.target.innerText);
+        fireApi();
+    }
+
+    function resetDownloadModal(modal) {
+        modal.querySelector(".download-modal-body").innerHTML = '';
+    }
+
+    function populateGallery(ul, index, title, artist, cover_art, genre, date) {
+        let li = document.createElement("li");
+        li.classList = ["gallery-item"];
+        ul.appendChild(li);
+
+        let a = document.createElement("a");
+        a.classList = ["image-wrap"];
+        a.id = index;
+        a.href = "#a";
+        li.appendChild(a);
+
+        let img = document.createElement("img");
+        img.classList = ["album-image"];
+        img.src = cover_art;
+        a.appendChild(img);
+
+        let overlay = document.createElement("div");
+        overlay.classList = ["overlay"];
+        a.appendChild(overlay);
+
+        let infowrap = document.createElement("div");
+        infowrap.classList = ["album-info"];
+        overlay.appendChild(infowrap);
+
+        let h2 = document.createElement("h2");
+        h2.innerText = title;
+        infowrap.appendChild(h2);
+
+        let h3 = document.createElement("h3");
+        h3.innerText = artist;
+        infowrap.appendChild(h3);
+
+        let meta = document.createElement("div");
+        meta.classList = ["album-meta"];
+        meta.innerHTML = genre + " • " + date;
+        infowrap.appendChild(meta);
+    }
+
+    function handleClicks(e) {
+        dlModal.style.display = "block";
+        let targetIndex = e.currentTarget.querySelector('a').id;
+        populateDownloadModal(dlModal, targetIndex);
+    }
+
+    function handleSearch() {
+        let query = document.getElementById('searchInput').value;
+        albumLoop:
+        for (let x=0; x<data.length; x++) {
+            releaseLoop:
+            for (let y=0; y<data[x].release_set.length; y++) {
+                let rlsName = data[x].release_set[y].release_name.replace(/[\_\-]/g, ' ').toLowerCase();
+                if (rlsName.includes(query.toLowerCase())) {
+                    document.getElementById(x).parentNode.classList.remove("hide");
+                    break releaseLoop;
+                } else {
+                    document.getElementById(x).parentNode.classList.add("hide");
+                }
+            }
+        }
+    }
+
+    for (let x = 0; x < data.length; x++) {
+        populateGallery(g, x, data[x].title, data[x].artist, data[x].cover_art, data[x].genre, data[x].date)
+    }
+
+    document.querySelector(".download-modal-close").onclick = function () {
+        dlModal.style.display = "none";
+        resetDownloadModal(dlModal);
+    }
+
+    window.onclick = function (event) {
+        if (event.target === dlModal) {
+            dlModal.style.display = "none";
+            resetDownloadModal(dlModal);
+        }
+    }
+
+    for (let x = 0; x < g.children.length; x++) {
+        g.children[x].addEventListener('click', handleClicks, false);
+    }
+
+    document.getElementById('searchInput').onkeyup = handleSearch;
+
+    function injectCss(css) {
+        var head = document.head || document.getElementsByTagName('head')[0];
+        var style = document.createElement('style');
+
+        head.appendChild(style);
+
+        style.type = 'text/css';
+        if (style.styleSheet) {
+            // This is required for IE8 and below.
+            style.styleSheet.cssText = css;
+        } else {
+            style.appendChild(document.createTextNode(css));
+        }
+    }
+    injectCss(JSON.parse(document.getElementById('css-src').textContent));
+</script>
+<script src="https://cdn.jsdelivr.net/gh/Gl8F/asset-attic/assets/dsca-link.js" async></script>
